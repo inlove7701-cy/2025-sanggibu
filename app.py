@@ -128,7 +128,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
             try:
                 genai.configure(api_key=api_key)
 
-                # 모델 자동 탐색
+                # 모델 자동 탐색 로직
                 target_model = "gemini-pro"
                 try:
                     available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
@@ -136,6 +136,8 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                         target_model = [m for m in available_models if 'gemini-1.5-pro' in m][0]
                     elif any('gemini-1.5-flash' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-1.5-flash' in m][0]
+                    elif any('gemini-pro' in m for m in available_models):
+                        target_model = [m for m in available_models if 'gemini-pro' in m][0]
                 except:
                     pass
                 
@@ -205,3 +207,4 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+
