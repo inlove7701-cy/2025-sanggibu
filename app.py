@@ -23,7 +23,42 @@ st.markdown("""
         border: 1px solid rgba(128, 128, 128, 0.2); /* 은은한 테두리 */
     }
 
-    /* 3발 메이트")
+    /* 3. 헤더 및 소제목 스타일 */
+    h1 {
+        font-weight: 700;
+        letter-spacing: -1px;
+    }
+    .subtitle {
+        font-size: 16px;
+        color: gray; /* 회색은 다크/라이트 모드 모두 잘 보임 */
+        margin-top: -15px;
+        margin-bottom: 30px;
+        font-weight: 400;
+    }
+
+    /* 4. 버튼 스타일 (Streamlit 기본 색상 활용하여 가독성 확보) */
+    .stButton button {
+        border-radius: 8px;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border: none;
+        transition: all 0.2s ease;
+    }
+    /* 버튼에 마우스 올렸을 때 살짝 커지는 효과 */
+    .stButton button:hover {
+        transform: scale(1.02);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- 2. API 키 설정 ---
+try:
+    api_key = st.secrets["GOOGLE_API_KEY"]
+except FileNotFoundError:
+    api_key = None
+
+# --- 3. 헤더 영역 ---
+st.title("📝 2025 행발발 메이트")
 st.markdown("<p class='subtitle'>Gift for 2025 1st Grade Teachers</p>", unsafe_allow_html=True)
 st.divider()
 
@@ -101,5 +136,4 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
-                
 
