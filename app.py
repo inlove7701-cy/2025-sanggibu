@@ -44,25 +44,24 @@ st.markdown("""
         transform: scale(1.01); 
         color: white !important;
     }
-    
     /* =================================================================
-       [수정됨] 슬라이더 스타일: 왼쪽(머스터드) - 별 - 오른쪽(녹색)
+       [수정됨] 슬라이더 스타일: 왼쪽(머스터드) - 별 - 오른쪽(회색)
        ================================================================= */
     
-    /* 1. 슬라이더 배경 트랙 (오른쪽/남은 부분) -> 녹색(#557C64) */
+    /* 1. 슬라이더 배경 트랙 (오른쪽/남은 부분) -> 회색(#E0E0E0)으로 변경 */
     div[data-testid="stSlider"] div[data-baseweb="slider"] > div {
-        background-color: #557C64 !important; 
+        background-color: #E0E0E0 !important; /* 녹색 뺌 */
         border-radius: 10px;
-        height: 6px !important; /* 선 두께를 얇게 고정 */
+        height: 6px !important; /* 선 두께 얇게 유지 */
     }
 
-    /* 2. 슬라이더 채워진 부분 (왼쪽/지나간 부분) -> 머스터드(#D4AC0D) */
+    /* 2. 슬라이더 채워진 부분 (왼쪽/지나간 부분) -> 머스터드(#D4AC0D) 유지 */
     div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
         background-color: #D4AC0D !important;
-        height: 6px !important; /* 선 두께 통일 */
+        height: 6px !important;
     }
 
-    /* 3. 슬라이더 손잡이(Thumb) 본체 숨기기 (원래 동그라미 제거) */
+    /* 3. 슬라이더 손잡이(Thumb) 본체 숨기기 */
     div[data-testid="stSlider"] div[role="slider"] {
         background-color: transparent !important;
         box-shadow: none !important;
@@ -79,15 +78,13 @@ st.markdown("""
         position: absolute;
         top: -18px;               
         left: -5px;               
-        text-shadow: 0px 1px 2px rgba(0,0,0,0.2); /* 약간의 그림자 */
+        text-shadow: 0px 1px 2px rgba(0,0,0,0.2);
     }
     
-    /* 5. 빨간색 숫자(값 표시) 제거 또는 색상 변경 */
-    div[data-testid="stSliderTickBar"] { display: none; } /* 눈금 숨김 (깔끔하게) */
+    /* 5. 숫자 값 색상도 튀지 않게 변경 */
     div[data-testid="stSlider"] div[data-testid="stMarkdownContainer"] p {
-        color: #557C64 !important; /* 글자색도 녹색으로 */
+        color: #557C64 !important; /* 글자색은 테마색 유지 */
     }
-
     /* ================================================================= */
 
     /* 라디오 버튼 스타일 */
@@ -339,6 +336,7 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
