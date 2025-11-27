@@ -200,12 +200,12 @@ with st.container(border=True):
         label_visibility="collapsed"
     )
 
-# [카드 2] 희망 분량 설정 (별표 슬라이더 적용)
+# [카드 2] 희망 분량 설정
 with st.container(border=True):
     st.markdown('<p class="card-title">② 희망 분량 (공백 포함)</p>', unsafe_allow_html=True)
     target_length = st.slider(
         "글자 수",
-        min_value=200, max_value=600, value=500, step=20,
+        min_value=300, max_value=1000, value=500, step=50,
         label_visibility="collapsed"
     )
 
@@ -222,6 +222,16 @@ with st.container(border=True):
     except:
         selected_tags = st.multiselect("키워드 선택", filter_options, label_visibility="collapsed")
 
+# [NEW] 모델 선택 (고급 설정) - 접었다 폈다 할 수 있게 Expander 사용
+st.markdown("")
+with st.expander("⚙️ AI 모델 직접 선택하기 (고급 설정)"):
+    manual_model = st.selectbox(
+        "사용할 모델을 선택하세요 (보통 '자동'을 추천합니다)",
+        ["🤖 자동 (Auto - 추천)", "gemini-1.5-flash (빠름/무료)", "gemini-1.5-pro (고성능)", "gemini-pro (구버전)"],
+        index=0,
+        help="Google API 키 권한에 따라 사용 불가능한 모델이 있을 수 있습니다."
+    )
+
 
 # --- 7. 실행 및 결과 영역 ---
 st.markdown("")
@@ -235,19 +245,29 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
             try:
                 genai.configure(api_key=api_key)
 
-                # 모델 자동 탐색
-                target_model = "gemini-pro"
-                try:
-                    models = genai.list_models()
-                    available_names = [m.name for m in models if 'generateContent' in m.supported_generation_methods]
-                    for name in available_names:
-                        if 'gemini-1.5-pro' in name:
-                            target_model = name
-                            break
-                        elif 'gemini-1.5-flash' in name:
-                            target_model = name
-                except:
-                    pass
+                # --- [수정됨] 모델 선택 로직 (수동 vs 자동) ---
+                target_model = "gemini-1.5-flash" # 기본값
+                
+                # 1. 사용자가 특정 모델을 찍었을 때
+                if "gemini" in manual_model:
+                    target_model = manual_model.split()[0] # "gemini-1.5-flash (빠름)" -> "gemini-1.5-flash" 추출
+                
+                # 2. '자동(Auto)'을 선택했을 때 (기존 로직 수행)
+                else:
+                    try:
+                        models = genai.list_models()
+                        available_names = [m.name for m in models if 'generateContent' in m.supported_generation_methods]
+                        # 우선순위: 1.5-pro -> 1.5-flash
+                        for name in available_names:
+                            if 'gemini-1.5-pro' in name:
+                                target_model = name
+                                break
+                            elif 'gemini-1.5-flash' in name:
+                                target_model = name
+                    except:
+                        pass # API 호출 실패 시 기본값(flash) 사용
+
+                # --- 이후 로직은 동일 ---
                 
                 # 모드별 설정
                 if "엄격하게" in mode:
@@ -323,6 +343,7 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                 </div>
                 """, unsafe_allow_html=True)
                 
+                # 사용된 모델 이름 표시
                 st.caption(f"※ {mode.split()[1]} 모드 동작 중 ({target_model})")
                 st.text_area("결과 (복사해서 나이스에 붙여넣으세요)", value=final_text, height=350)
 
@@ -336,6 +357,7 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
