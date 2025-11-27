@@ -23,10 +23,22 @@ st.markdown("""
     h1 { font-weight: 700; letter-spacing: -1px; }
     .subtitle { font-size: 16px; color: gray; margin-top: -15px; margin-bottom: 30px; }
     
+    /* [수정됨] 버튼 스타일: 기분 좋은 녹색 (에메랄드) */
     .stButton button { 
-        border-radius: 8px; font-weight: bold; border: none; transition: all 0.2s ease; 
+        background-color: #2ecc71 !important; /* 메인 색상: 에메랄드 그린 */
+        color: white !important;              /* 글자색: 흰색 */
+        border-radius: 8px; 
+        font-weight: bold; 
+        border: none; 
+        transition: all 0.2s ease; 
+        padding: 0.5rem 1rem;
     }
-    .stButton button:hover { transform: scale(1.02); }
+    /* 버튼에 마우스 올렸을 때 색상 (조금 더 진하게) */
+    .stButton button:hover { 
+        background-color: #27ae60 !important; 
+        transform: scale(1.02); 
+        color: white !important;
+    }
     
     .guide-box {
         background-color: rgba(240, 242, 246, 0.5);
@@ -49,6 +61,26 @@ st.markdown("""
         font-size: 14px;
         margin-bottom: 5px;
         text-align: right;
+    }
+    
+    .analysis-box {
+        background-color: #f8f9fa;
+        border-left: 4px solid #2ecc71; /* 분석 박스 왼쪽 선도 녹색으로 깔맞춤 */
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #333;
+    }
+    
+    /* 푸터 스타일 */
+    .footer {
+        margin-top: 50px;
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+        border-top: 1px solid #eee;
+        padding-top: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -216,4 +248,5 @@ st.markdown("""
     문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
