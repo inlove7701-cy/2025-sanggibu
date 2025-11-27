@@ -2,14 +2,8 @@ import streamlit as st
 import google.generativeai as genai
 
 # --- 1. 페이지 설정 ---
-st.set_page_config(
-    page_title="2025 생기부 메이트",
-    page_icon="📝",
-    layout="centered"
-)
+st.set_page_config(page_title="2025 생기부 메이트", page_icon="📝", layout="centered")
 
-# --- [디자인 수정] 시스템 테마(다크/라이트) 자동 반영 CSS ---
-# 배경색과 글자색 강제 설정을 제거하고, 폰트와 테두리 등 모양만 예쁘게 다듬었습니다.
 st.markdown("""
     <style>
     /* 1. 폰트 설정 (깔끔한 고딕체) */
@@ -98,18 +92,29 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
             try: 
                 genai.configure(api_key=api_key)
                 
-                # --- [핵심] 사용 가능한 모델 자동 찾기 로직 (유지) ---
-                target_model = "gemini-pro"
+                # --- [핵심] 사용 가능한 모델 자동 찾기 로직 ---
+                target_model = "gemini-pro" # 기본값 (최후의 수단)
+                
                 try:
+                    # 내 키로 쓸 수 있는 모델 리스트를 다 가져옴
                     available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+                    
+                    # 우선순위: 1.5 Pro -> 1.5 Flash -> 1.0 Pro
                     if any('gemini-1.5-pro' in m for m in available_models):
+                        # 리스트에서 정확한 이름(models/gemini-1.5-pro-001 등)을 찾아서 씀
                         target_model = [m for m in available_models if 'gemini-1.5-pro' in m][0]
                     elif any('gemini-1.5-flash' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-1.5-flash' in m][0]
-                except:
+                    elif any('gemini-pro' in m for m in available_models):
+                        target_model = [m for m in available_models if 'gemini-pro' in m][0]
+                        
+                except Exception as e:
+                    # 리스트 조회 실패 시 그냥 기본값 사용
                     pass
+                
+                # 자동으로 찾은 모델 이름으로 설정
                 model = genai.GenerativeModel(target_model)
-                # ----------------------------------------------------
+                # ---------------------------------------------
 
                 if not selected_tags:
                     tags_str = "전체적인 맥락에서 가장 우수한 역량 자동 추출"
@@ -131,9 +136,10 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 response = model.generate_content(system_prompt)
                 
                 st.success("작성 완료!")
-                st.caption(f"※ 사용된 AI 모델: {target_model}")
+                st.caption(f"※ 사용된 AI 모델: {target_model}") # 어떤 모델이 쓰였는지 보여줌
                 st.text_area("결과 (복사해서 사용하세요)", value=response.text, height=300)
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+                st.info("여전히 오류가 난다면, GitHub의 requirements.txt 파일 내용을 확인해주세요.")
 
