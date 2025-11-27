@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- 2. [디자인] 숲속 테마 CSS (슬라이더 색상 로직 수정됨) ---
+# --- 2. [디자인] 숲속 테마 CSS (슬라이더 선 색상 정밀 수정) ---
 st.markdown("""
     <style>
     /* 폰트 설정 */
@@ -16,7 +16,7 @@ st.markdown("""
         font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; 
     }
     
-    /* 입력창 스타일 */
+    /* 입력창: 부드러운 테두리 */
     .stTextArea textarea { 
         border-radius: 12px; 
         border: 1px solid rgba(85, 124, 100, 0.2); 
@@ -46,21 +46,23 @@ st.markdown("""
     }
     
     /* =================================================================
-       [핵심 수정] 슬라이더 스타일링 (왼쪽:머스터드 / 오른쪽:녹색 / 별표)
+       [수정됨] 슬라이더 스타일: 왼쪽(머스터드) - 별 - 오른쪽(녹색)
        ================================================================= */
     
-    /* 1. 슬라이더 배경 (오른쪽/빈 부분) -> 녹색(#557C64) */
+    /* 1. 슬라이더 배경 트랙 (오른쪽/남은 부분) -> 녹색(#557C64) */
     div[data-testid="stSlider"] div[data-baseweb="slider"] > div {
         background-color: #557C64 !important; 
         border-radius: 10px;
+        height: 6px !important; /* 선 두께를 얇게 고정 */
     }
 
     /* 2. 슬라이더 채워진 부분 (왼쪽/지나간 부분) -> 머스터드(#D4AC0D) */
     div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
         background-color: #D4AC0D !important;
+        height: 6px !important; /* 선 두께 통일 */
     }
 
-    /* 3. 슬라이더 손잡이(Thumb) 본체 숨기기 */
+    /* 3. 슬라이더 손잡이(Thumb) 본체 숨기기 (원래 동그라미 제거) */
     div[data-testid="stSlider"] div[role="slider"] {
         background-color: transparent !important;
         box-shadow: none !important;
@@ -77,9 +79,15 @@ st.markdown("""
         position: absolute;
         top: -18px;               
         left: -5px;               
-        text-shadow: 0px 1px 3px rgba(0,0,0,0.3); /* 약간의 그림자 */
+        text-shadow: 0px 1px 2px rgba(0,0,0,0.2); /* 약간의 그림자 */
     }
     
+    /* 5. 빨간색 숫자(값 표시) 제거 또는 색상 변경 */
+    div[data-testid="stSliderTickBar"] { display: none; } /* 눈금 숨김 (깔끔하게) */
+    div[data-testid="stSlider"] div[data-testid="stMarkdownContainer"] p {
+        color: #557C64 !important; /* 글자색도 녹색으로 */
+    }
+
     /* ================================================================= */
 
     /* 라디오 버튼 스타일 */
@@ -104,31 +112,39 @@ st.markdown("""
         background-color: #F7F9F8;
     }
     
-    /* 안내 박스 및 기타 스타일 */
+    /* 안내 박스 */
     .guide-box {
-        background-color: #F7F9F8; padding: 20px; border-radius: 12px;
-        border: 1px solid #E0E5E2; margin-bottom: 25px; 
+        background-color: #F7F9F8; 
+        padding: 20px; 
+        border-radius: 12px;
+        border: 1px solid #E0E5E2; 
+        margin-bottom: 25px; 
         font-size: 14px; color: #444; line-height: 1.6;
         box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     }
     .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px; color: #557C64;}
     
+    /* 경고 문구 */
     .warning-text { color: #8D6E63; font-size: 14px; margin-top: 5px; font-weight: 500; }
     
+    /* 글자 수 박스 */
     .count-box {
         background-color: #E3EBE6; color: #2F4F3A; padding: 12px; border-radius: 8px;
         font-weight: bold; font-size: 14px; margin-bottom: 10px; text-align: right; border: 1px solid #C4D7CD; 
     }
     
+    /* 분석 박스 */
     .analysis-box {
         background-color: #FCFDFD; border-left: 4px solid #557C64; padding: 15px;
         border-radius: 5px; margin-bottom: 20px; font-size: 14px; color: #333;
     }
     
+    /* 푸터 스타일 */
     .footer {
         margin-top: 50px; text-align: center; font-size: 14px; color: #888; border-top: 1px solid #eee; padding-top: 20px;
     }
     
+    /* 카드 제목 스타일 */
     .card-title {
         font-size: 15px; font-weight: 700; color: #557C64; margin-bottom: 10px;
     }
@@ -323,6 +339,7 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
