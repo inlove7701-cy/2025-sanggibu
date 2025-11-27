@@ -6,42 +6,33 @@ st.set_page_config(page_title="2025 생기부 메이트", page_icon="📝", layo
 
 st.markdown("""
     <style>
-    /* 1. 폰트 설정 (깔끔한 고딕체) */
-    html, body, [class*="css"] {
-        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Helvetica', sans-serif;
+    html, body, [class*="css"] { font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; }
+    
+    /* 입력창 스타일 */
+    .stTextArea textarea { 
+        border-radius: 10px; 
+        border: 1px solid rgba(128, 128, 128, 0.2); 
     }
     
-    /* 2. 입력창 디자인 (테마에 따라 배경색 자동 변경되도록 투명도 활용) */
-    .stTextArea textarea {
-        border-radius: 10px;        /* 둥근 모서리 */
-        border: 1px solid rgba(128, 128, 128, 0.2); /* 은은한 테두리 */
+    /* 제목 및 텍스트 스타일 */
+    h1 { font-weight: 700; letter-spacing: -1px; }
+    .subtitle { font-size: 16px; color: gray; margin-top: -15px; margin-bottom: 30px; }
+    
+    /* 버튼 스타일 */
+    .stButton button { border-radius: 8px; font-weight: bold; border: none; transition: all 0.2s ease; }
+    .stButton button:hover { transform: scale(1.02); }
+    
+    /* 안내 박스 스타일 (Notion Callout 느낌) */
+    .guide-box {
+        background-color: rgba(240, 242, 246, 0.5); /* 반투명 회색 배경 */
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid rgba(128, 128, 128, 0.1);
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #444;
     }
-
-    /* 3. 헤더 및 소제목 스타일 */
-    h1 {
-        font-weight: 700;
-        letter-spacing: -1px;
-    }
-    .subtitle {
-        font-size: 16px;
-        color: gray; /* 회색은 다크/라이트 모드 모두 잘 보임 */
-        margin-top: -15px;
-        margin-bottom: 30px;
-        font-weight: 400;
-    }
-
-    /* 4. 버튼 스타일 (Streamlit 기본 색상 활용하여 가독성 확보) */
-    .stButton button {
-        border-radius: 8px;
-        font-weight: bold;
-        padding: 0.5rem 1rem;
-        border: none;
-        transition: all 0.2s ease;
-    }
-    /* 버튼에 마우스 올렸을 때 살짝 커지는 효과 */
-    .stButton button:hover {
-        transform: scale(1.02);
-    }
+    .guide-title { font-weight: bold; margin-bottom: 5px; display: block; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -148,6 +139,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
                 st.info("여전히 오류가 난다면, GitHub의 requirements.txt 파일 내용을 확인해주세요.")
+
 
 
 
