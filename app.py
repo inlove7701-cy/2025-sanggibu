@@ -23,44 +23,6 @@ st.markdown("""
     h1 { font-weight: 700; letter-spacing: -1px; }
     .subtitle { font-size: 16px; color: gray; margin-top: -15px; margin-bottom: 30px; }
     
-선생님, 정말 섬세하신 부분까지 신경 쓰시는군요! 하루 종일 모니터를 보셔야 하는 선생님들께는 **'눈의 피로도'**가 정말 중요하죠.
-
-에메랄드 그린은 예쁘지만 채도가 높아서 오래 보면 눈이 시릴 수 있습니다. 대신, '세이지 그린(Sage Green)' 색상을 강력 추천합니다.
-
-색상 특징: 쑥색이나 말린 잎사귀 색에 가깝습니다.
-
-장점: 채도를 낮춰서 눈부심이 없고, 자연의 색이라 심리적인 안정감을 줍니다. 스타벅스나 고급 스파 브랜드에서 주로 쓰는 '힐링' 컬러입니다.
-
-아래 코드는 **[차분한 세이지 그린]**을 적용한 최종 코드입니다.
-
-🌿 [눈이 편안한 세이지 그린] 최종 코드 (app.py)
-Python
-
-import streamlit as st
-import google.generativeai as genai
-
-# --- 1. 페이지 설정 ---
-st.set_page_config(
-    page_title="2025 생기부 메이트",
-    page_icon="📝",
-    layout="centered"
-)
-
-# --- 2. [디자인] 반응형 CSS ---
-st.markdown("""
-    <style>
-    html, body, [class*="css"] { 
-        font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; 
-    }
-    
-    .stTextArea textarea { 
-        border-radius: 10px; 
-        border: 1px solid rgba(128, 128, 128, 0.2); 
-    }
-    
-    h1 { font-weight: 700; letter-spacing: -1px; }
-    .subtitle { font-size: 16px; color: gray; margin-top: -15px; margin-bottom: 30px; }
-    
     /* [색상 변경됨] 버튼 스타일: 눈이 편안한 세이지 그린 (Sage Green) */
     .stButton button { 
         background-color: #557C64 !important; /* 차분한 쑥색/세이지 그린 */
@@ -289,6 +251,7 @@ st.markdown("""
     문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
