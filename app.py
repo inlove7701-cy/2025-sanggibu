@@ -8,29 +8,29 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- [디자인] 반응형 CSS ---
+# --- 2. [디자인] 반응형 CSS ---
 st.markdown("""
     <style>
-    html, body, [class*="css"] { font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; }
+    html, body, [class*="css"] { 
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; 
+    }
     
-    /* 입력창 스타일 */
     .stTextArea textarea { 
         border-radius: 10px; 
         border: 1px solid rgba(128, 128, 128, 0.2); 
     }
     
-    /* 제목 및 텍스트 스타일 */
     h1 { font-weight: 700; letter-spacing: -1px; }
     .subtitle { font-size: 16px; color: gray; margin-top: -15px; margin-bottom: 30px; }
     
-    /* 버튼 스타일 */
-    .stButton button { border-radius: 8px; font-weight: bold; border: none; transition: all 0.2s ease; }
+    .stButton button { 
+        border-radius: 8px; font-weight: bold; border: none; transition: all 0.2s ease; 
+    }
     .stButton button:hover { transform: scale(1.02); }
     
-    /* 안내 박스 스타일 */
     .guide-box {
-        background-color: rgba(240, 242, 246, 0.5); /* 반투명 회색 배경 */
-        padding: 15px;
+        background-color: rgba(240, 242, 246, 0.5);
+        padding: 20px;
         border-radius: 10px;
         border: 1px solid rgba(128, 128, 128, 0.1);
         margin-bottom: 20px;
@@ -40,9 +40,8 @@ st.markdown("""
     }
     .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px;}
     
-    /* 글자 수 표시 박스 스타일 */
     .count-box {
-        background-color: #E8F6F3; /* 연한 민트색 */
+        background-color: #E8F6F3;
         color: #1D8348;
         padding: 10px;
         border-radius: 5px;
@@ -54,13 +53,13 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 2. API 키 설정 ---
+# --- 3. API 키 설정 ---
 try:
     api_key = st.secrets["GOOGLE_API_KEY"]
 except FileNotFoundError:
     api_key = None
 
-# --- 3. 헤더 영역 ---
+# --- 4. 헤더 영역 ---
 st.title("📝 2025 1학년부 행발 메이트")
 st.markdown("<p class='subtitle'>Gift for 2025 1st Grade Teachers</p>", unsafe_allow_html=True)
 st.divider()
@@ -80,8 +79,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-
-# --- 4. 입력 영역 ---
+# --- 5. 입력 영역 ---
 st.markdown("### 1. 학생 관찰 내용")
 student_input = st.text_area(
     "입력창",
@@ -90,11 +88,10 @@ student_input = st.text_area(
     label_visibility="collapsed"
 )
 
-# 입력 글자수 체크
 if student_input and len(student_input) < 30:
     st.markdown("<p style='color:#e67e22; font-size:14px;'>⚠️ 내용이 조금 짧습니다. 3가지 에피소드가 들어갔나요?</p>", unsafe_allow_html=True)
 
-# --- 5. 필터 영역 ---
+# --- 6. 필터 영역 ---
 st.markdown("### 2. 강조할 핵심 키워드 선택")
 filter_options = [
     "👑 AI 입학사정관 자동 판단", "📘 학업 역량", "🤝 공동체 역량", 
@@ -106,7 +103,7 @@ try:
 except:
     selected_tags = st.multiselect("키워드 선택", filter_options)
 
-# --- 6. 실행 및 결과 영역 ---
+# --- 7. 실행 및 결과 영역 ---
 st.markdown("")
 if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_width=True):
     if not api_key:
@@ -115,32 +112,31 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
         st.warning("⚠️ 학생 관찰 내용을 입력해주세요!")
     else:
         with st.spinner('AI 입학사정관이 분석 중입니다...'):
-            try: 
+            try:
                 genai.configure(api_key=api_key)
-                
-                # --- [핵심] 사용 가능한 모델 자동 찾기 로직 ---
-                target_model = "gemini-pro" # 기본값
-                
+
+                # 모델 자동 탐색 로직
+                target_model = "gemini-pro"
                 try:
                     available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-                    
                     if any('gemini-1.5-pro' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-1.5-pro' in m][0]
                     elif any('gemini-1.5-flash' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-1.5-flash' in m][0]
                     elif any('gemini-pro' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-pro' in m][0]
-                except Exception as e:
+                except:
                     pass
                 
                 model = genai.GenerativeModel(target_model)
-                # ---------------------------------------------
 
+                # 태그 처리
                 if not selected_tags:
                     tags_str = "전체적인 맥락에서 가장 우수한 역량 자동 추출"
                 else:
                     tags_str = ", ".join(selected_tags)
 
+                # 프롬프트 정의
                 system_prompt = f"""
                 당신은 입학사정관 관점을 가진 고등학교 교사입니다.
                 입력 정보: {student_input}
@@ -151,11 +147,32 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 - 구조: 사례 -> 행동 -> 성장/평가
                 - 분량: 500자 내외
                 
-                # 작성 원칙 (매우 중요)
-                1. **No Hallucination (날조 금지)**: 입력된 내용에 없는 사실을 절대 지어내지 마십시오.
-                2. **3-Point Rule (3요소 포함)**: 입력된 텍스트에서 최소 3가지 이상의 에피소드를 포함하십시오.
-                3. **Structure (구성)**: [구체적 사례] → [행동/태도] → [성장/평가] 흐름 유지.
+                # 작성 원칙
+                1. 날조 금지 (No Hallucination)
+                2. 3요소 포함 (3-Point Rule)
+                3. 구조 유지 (Structure)
                 """
-                
-                # [수정 포인트] 들여쓰기 오류 수정됨
+
+                # [중요] 들여쓰기 수정 완료된 부분
                 response = model.generate_content(system_prompt)
+                result_text = response.text
+                
+                # 글자 수 계산
+                char_count = len(result_text)
+                char_count_no_space = len(result_text.replace(" ", "").replace("\n", ""))
+                
+                st.success("작성 완료!")
+                
+                # 글자 수 표시
+                st.markdown(f"""
+                <div class="count-box">
+                    📊 공백 포함: {char_count}자 | 공백 제외: {char_count_no_space}자
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.caption(f"※ 팩트 기반 작성 모드 동작 중 ({target_model})")
+                st.text_area("결과 (복사해서 사용하세요)", value=result_text, height=350)
+
+            except Exception as e:
+                st.error(f"오류가 발생했습니다: {e}")
+
