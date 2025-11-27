@@ -99,7 +99,7 @@ filter_options = [
     "😊 인성/나눔/배려", "⏰ 성실성/규칙준수"
 ]
 try:
-    selected_tags = st.pills("이 학생의 강조하고 싶은 역량_가장 앞에 노출됩니다", options=filter_options, selection_mode="multi")
+    selected_tags = st.pills("이 학생의 강조하고 싶은 역량_가장 앞에 노출됩니다. 미선택시 AI 입학사정관이 판단한 중요도 순으로 노출되요~! ^^", options=filter_options, selection_mode="multi")
 except:
     selected_tags = st.multiselect("키워드 선택", filter_options)
 
@@ -175,6 +175,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+
 
 
 
