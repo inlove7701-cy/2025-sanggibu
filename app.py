@@ -82,7 +82,6 @@ student_input = st.text_area(
 if student_input and len(student_input) < 30:
     st.markdown("<p style='color:#e67e22; font-size:14px;'>⚠️ 내용이 조금 짧습니다. 3가지 에피소드가 들어갔나요?</p>", unsafe_allow_html=True)
 
-
 # --- 5. 필터 영역 ---
 st.markdown("### 2. 강조할 핵심 키워드 선택")
 filter_options = [
@@ -103,35 +102,50 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
     elif not student_input:
         st.warning("⚠️ 학생 관찰 내용을 입력해주세요!")
     else:
-        with st.spinner('AI 입학사정관이 사실에 기반하여 분석 중입니다...'):
+        with st.spinner('AI 입학사정관이 분석 중입니다...'):
             try: 
                 genai.configure(api_key=api_key)
                 
-                # 모델 자동 선택 로직
-                target_model = "gemini-pro"
+                # --- [핵심] 사용 가능한 모델 자동 찾기 로직 ---
+                target_model = "gemini-pro" # 기본값 (최후의 수단)
+                
                 try:
+                    # 내 키로 쓸 수 있는 모델 리스트를 다 가져옴
                     available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+                    
+                    # 우선순위: 1.5 Pro -> 1.5 Flash -> 1.0 Pro
                     if any('gemini-1.5-pro' in m for m in available_models):
+                        # 리스트에서 정확한 이름(models/gemini-1.5-pro-001 등)을 찾아서 씀
                         target_model = [m for m in available_models if 'gemini-1.5-pro' in m][0]
                     elif any('gemini-1.5-flash' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-1.5-flash' in m][0]
-                except:
+                    elif any('gemini-pro' in m for m in available_models):
+                        target_model = [m for m in available_models if 'gemini-pro' in m][0]
+                        
+                except Exception as e:
+                    # 리스트 조회 실패 시 그냥 기본값 사용
                     pass
+                
+                # 자동으로 찾은 모델 이름으로 설정
                 model = genai.GenerativeModel(target_model)
+                # ---------------------------------------------
 
                 if not selected_tags:
                     tags_str = "전체적인 맥락에서 가장 우수한 역량 자동 추출"
                 else:
                     tags_str = ", ".join(selected_tags)
 
-                # --- 팩트 체크 및 3요소 강제 프롬프트 ---
                 system_prompt = f"""
-                당신은 생활기록부 작성의 원칙을 철저히 준수하는 고등학교 교사입니다.
+                당신은 입학사정관 관점을 가진 고등학교 교사입니다.
+                입력 정보: {student_input}
+                강조 영역: [{tags_str}]
                 
-                [입력 정보]: {student_input}
-                [강조 영역]: {tags_str}
-                
-                # 작성 원칙 (매우 중요)
+                위 학생의 '행동특성 및 종합의견'을 작성하세요.
+                - 문체: ~함, ~임 (개조식+서술형)
+                - 구조: 사례 -> 행동 -> 성장/평가
+                - 분량: 400자~600자
+                - 미사여구보다 구체적 사실(Fact) 위주로 작성할 것.
+          # 작성 원칙 (매우 중요)
                 1. **No Hallucination (날조 금지)**: 사용자가 입력한 내용에 없는 사실을 절대 지어내지 마십시오. 만약 입력된 정보가 부족하면 문장을 화려하게 꾸미기보다 있는 사실을 담백하게 서술하십시오.
                 2. **3-Point Rule (3요소 포함)**: 입력된 텍스트에서 **최소 3가지만큼의 구체적인 에피소드나 키워드**를 찾아내어 문단에 포함시키십시오. (만약 입력 정보가 3가지 미만이라면 있는 것만 활용하십시오.)
                 3. **Structure (구성)**: [구체적 사례] → [학생의 행동/태도] → [성장/잠재력 평가]의 흐름을 유지하십시오.
@@ -142,11 +156,20 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 response = model.generate_content(system_prompt)
                 
                 st.success("작성 완료!")
-                st.caption(f"※ 팩트 기반 작성 모드 동작 중 ({target_model})")
+                st.caption(f"※ 사용된 AI 모델: {target_model}") # 어떤 모델이 쓰였는지 보여줌
                 st.text_area("결과 (복사해서 사용하세요)", value=response.text, height=300)
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+                st.info("여전히 오류가 난다면, GitHub의 requirements.txt 파일 내용을 확인해주세요.")
+
+
+
+
+
+
+
+
 
 
 
