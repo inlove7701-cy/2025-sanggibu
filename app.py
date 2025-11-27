@@ -104,6 +104,17 @@ try:
 except:
     selected_tags = st.multiselect("키워드 선택", filter_options)
 
+# [NEW] 글자 수 조절 슬라이더 추가
+st.markdown("### 3. 희망 분량 설정")
+target_length = st.slider(
+    "생성할 글자 수 (공백 포함)",
+    min_value=300,
+    max_value=1000,
+    value=500,
+    step=50,
+    help="AI가 이 분량에 맞춰서 내용을 늘리거나 줄입니다."
+)
+
 # --- 7. 실행 및 결과 영역 ---
 st.markdown("")
 if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_width=True):
@@ -112,11 +123,11 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
     elif not student_input:
         st.warning("⚠️ 학생 관찰 내용을 입력해주세요!")
     else:
-        with st.spinner('선생님의 생각을 AI가 정리중입니다...'):
+        with st.spinner(f'AI가 {target_length}자 내외로 분석 중입니다...'):
             try:
                 genai.configure(api_key=api_key)
 
-                # 모델 자동 탐색 로직
+                # 모델 자동 탐색
                 target_model = "gemini-pro"
                 try:
                     available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
@@ -124,20 +135,17 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                         target_model = [m for m in available_models if 'gemini-1.5-pro' in m][0]
                     elif any('gemini-1.5-flash' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-1.5-flash' in m][0]
-                    elif any('gemini-pro' in m for m in available_models):
-                        target_model = [m for m in available_models if 'gemini-pro' in m][0]
                 except:
                     pass
                 
                 model = genai.GenerativeModel(target_model)
 
-                # 태그 처리
                 if not selected_tags:
                     tags_str = "전체적인 맥락에서 가장 우수한 역량 자동 추출"
                 else:
                     tags_str = ", ".join(selected_tags)
 
-                # 프롬프트 정의
+                # [수정됨] 프롬프트에 target_length 반영
                 system_prompt = f"""
                 당신은 입학사정관 관점을 가진 고등학교 교사입니다.
                 입력 정보: {student_input}
@@ -146,19 +154,18 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 위 학생의 '행동특성 및 종합의견'을 작성하세요.
                 - 문체: ~함, ~임 (개조식+서술형)
                 - 구조: 사례 -> 행동 -> 성장/평가
-                - 분량: 500자 내외
+                - 목표 분량: 공백 포함 약 {target_length}자 (오차범위 ±10%)
                 
                 # 작성 원칙
                 1. 날조 금지 (No Hallucination)
                 2. 3요소 포함 (3-Point Rule)
-                3. 구조 유지 (Structure)
+                3. 분량 준수: 입력 내용이 적더라도 살을 붙여서 {target_length}자에 가깝게 작성하시오.
                 """
 
-                # [중요] 들여쓰기 수정 완료된 부분
                 response = model.generate_content(system_prompt)
                 result_text = response.text
                 
-                # 글자 수 계산
+# 글자 수 계산
                 char_count = len(result_text)
                 char_count_no_space = len(result_text.replace(" ", "").replace("\n", ""))
                 
@@ -167,7 +174,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 # 글자 수 표시
                 st.markdown(f"""
                 <div class="count-box">
-                    📊 공백 포함: {char_count}자 | 공백 제외: {char_count_no_space}자
+                    📊 목표: {target_length}자 | 실제: {char_count}자 (공백제외 {char_count_no_space}자)
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -176,6 +183,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+
 
 
 
