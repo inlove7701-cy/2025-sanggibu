@@ -23,19 +23,58 @@ st.markdown("""
     h1 { font-weight: 700; letter-spacing: -1px; }
     .subtitle { font-size: 16px; color: gray; margin-top: -15px; margin-bottom: 30px; }
     
-    /* [수정됨] 버튼 스타일: 기분 좋은 녹색 (에메랄드) */
+선생님, 정말 섬세하신 부분까지 신경 쓰시는군요! 하루 종일 모니터를 보셔야 하는 선생님들께는 **'눈의 피로도'**가 정말 중요하죠.
+
+에메랄드 그린은 예쁘지만 채도가 높아서 오래 보면 눈이 시릴 수 있습니다. 대신, '세이지 그린(Sage Green)' 색상을 강력 추천합니다.
+
+색상 특징: 쑥색이나 말린 잎사귀 색에 가깝습니다.
+
+장점: 채도를 낮춰서 눈부심이 없고, 자연의 색이라 심리적인 안정감을 줍니다. 스타벅스나 고급 스파 브랜드에서 주로 쓰는 '힐링' 컬러입니다.
+
+아래 코드는 **[차분한 세이지 그린]**을 적용한 최종 코드입니다.
+
+🌿 [눈이 편안한 세이지 그린] 최종 코드 (app.py)
+Python
+
+import streamlit as st
+import google.generativeai as genai
+
+# --- 1. 페이지 설정 ---
+st.set_page_config(
+    page_title="2025 생기부 메이트",
+    page_icon="📝",
+    layout="centered"
+)
+
+# --- 2. [디자인] 반응형 CSS ---
+st.markdown("""
+    <style>
+    html, body, [class*="css"] { 
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; 
+    }
+    
+    .stTextArea textarea { 
+        border-radius: 10px; 
+        border: 1px solid rgba(128, 128, 128, 0.2); 
+    }
+    
+    h1 { font-weight: 700; letter-spacing: -1px; }
+    .subtitle { font-size: 16px; color: gray; margin-top: -15px; margin-bottom: 30px; }
+    
+    /* [색상 변경됨] 버튼 스타일: 눈이 편안한 세이지 그린 (Sage Green) */
     .stButton button { 
-        background-color: #2ecc71 !important; /* 메인 색상: 에메랄드 그린 */
-        color: white !important;              /* 글자색: 흰색 */
+        background-color: #557C64 !important; /* 차분한 쑥색/세이지 그린 */
+        color: white !important;
         border-radius: 8px; 
         font-weight: bold; 
         border: none; 
         transition: all 0.2s ease; 
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1rem; /* 버튼을 살짝 더 도톰하게 */
+        font-size: 16px !important;
     }
-    /* 버튼에 마우스 올렸을 때 색상 (조금 더 진하게) */
+    /* 마우스 올렸을 때: 조금 더 깊은 숲색 */
     .stButton button:hover { 
-        background-color: #27ae60 !important; 
+        background-color: #3E5F4A !important; 
         transform: scale(1.02); 
         color: white !important;
     }
@@ -52,9 +91,10 @@ st.markdown("""
     }
     .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px;}
     
+    /* 글자 수 표시 박스: 버튼 색과 어울리는 연한 톤 */
     .count-box {
-        background-color: #E8F6F3;
-        color: #1D8348;
+        background-color: #EDF5F0; /* 아주 연한 세이지색 배경 */
+        color: #2D4F3A;            /* 짙은 녹색 글씨 */
         padding: 10px;
         border-radius: 5px;
         font-weight: bold;
@@ -63,9 +103,10 @@ st.markdown("""
         text-align: right;
     }
     
+    /* 분석 박스 왼쪽 선: 버튼 색과 깔맞춤 */
     .analysis-box {
         background-color: #f8f9fa;
-        border-left: 4px solid #2ecc71; /* 분석 박스 왼쪽 선도 녹색으로 깔맞춤 */
+        border-left: 4px solid #557C64; 
         padding: 15px;
         border-radius: 5px;
         margin-bottom: 20px;
@@ -248,5 +289,6 @@ st.markdown("""
     문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
