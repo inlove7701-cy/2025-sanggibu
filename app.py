@@ -49,7 +49,7 @@ except FileNotFoundError:
     api_key = None
 
 # --- 3. 헤더 영역 ---
-st.title("📝 2025 생기부 메이트")
+st.title("📝 2025 1학년부 행발 메이트")
 st.markdown("<p class='subtitle'>Gift for 2025 1st Grade Teachers</p>", unsafe_allow_html=True)
 st.divider()
 
@@ -153,15 +153,28 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 위 원칙을 지켜 500자~700자 분량의 '행동특성 및 종합의견'을 작성하세요.
                 """
                 
-                response = model.generate_content(system_prompt)
+         response = model.generate_content(system_prompt)
+                result_text = response.text
+                
+                # --- [추가됨] 글자 수 계산 로직 ---
+                char_count = len(result_text) # 공백 포함
+                char_count_no_space = len(result_text.replace(" ", "").replace("\n", "")) # 공백/줄바꿈 제외
                 
                 st.success("작성 완료!")
                 st.caption(f"※ 사용된 AI 모델: {target_model}") # 어떤 모델이 쓰였는지 보여줌
-                st.text_area("결과 (복사해서 사용하세요)", value=response.text, height=300)
-
+# 글자 수 표시 (오른쪽 정렬된 민트색 박스)
+                st.markdown(f"""
+                <div class="count-box">
+                    📊 공백 포함: {char_count}자 | 공백 제외: {char_count_no_space}자
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.caption(f"※ 팩트 기반 작성 모드 동작 중 ({target_model})")
+                st.text_area("결과 (복사해서 사용하세요)", value=result_text, height=350)
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
                 st.info("여전히 오류가 난다면, GitHub의 requirements.txt 파일 내용을 확인해주세요.")
+
 
 
 
