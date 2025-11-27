@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- 2. [디자인] 숲속 테마 CSS (전체적인 조화 강조) ---
+# --- 2. [디자인] 숲속 테마 CSS (슬라이더 색상 수정됨) ---
 st.markdown("""
     <style>
     /* 폰트 설정 */
@@ -19,14 +19,14 @@ st.markdown("""
     /* 입력창: 부드러운 테두리 */
     .stTextArea textarea { 
         border-radius: 10px; 
-        border: 1px solid rgba(85, 124, 100, 0.2); /* 세이지 그린을 연하게 */
+        border: 1px solid rgba(85, 124, 100, 0.2); 
     }
     
     /* 제목 스타일 */
-    h1 { font-weight: 700; letter-spacing: -1px; color: #2F4F3A; } /* 아주 진한 숲색 */
+    h1 { font-weight: 700; letter-spacing: -1px; color: #2F4F3A; } 
     .subtitle { font-size: 16px; color: #666; margin-top: -15px; margin-bottom: 30px; }
     
-    /* 버튼 스타일: 세이지 그린 (Sage Green) */
+    /* 버튼 스타일: 세이지 그린 */
     .stButton button { 
         background-color: #557C64 !important; 
         color: white !important;
@@ -43,9 +43,17 @@ st.markdown("""
         color: white !important;
     }
     
-    /* 안내 박스: 차분한 회색톤 */
+    /* [NEW] 슬라이더(Slider) 색상 변경: 짙은 머스터드 (Warm Mustard) */
+    div.stSlider > div[data-baseweb="slider"] > div > div {
+        background-color: #D4AC0D !important; /* 여기 색상을 바꾸면 됩니다 */
+    }
+    div.stSlider > div[data-baseweb="slider"] > div > div > div {
+        background-color: #D4AC0D !important; /* 슬라이더 손잡이 */
+    }
+    
+    /* 안내 박스 */
     .guide-box {
-        background-color: #F7F9F8; /* 아주 연한 웜그레이 */
+        background-color: #F7F9F8; 
         padding: 20px;
         border-radius: 10px;
         border: 1px solid #E0E5E2;
@@ -56,31 +64,31 @@ st.markdown("""
     }
     .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px; color: #557C64;}
     
-    /* [수정됨] 경고 문구: 눈 아픈 빨강 -> 차분한 웜 브라운 */
+    /* 경고 문구 */
     .warning-text { 
-        color: #8D6E63; /* 부드러운 흙색/브라운 */
+        color: #8D6E63; 
         font-size: 14px; 
         margin-top: 5px; 
         font-weight: 500;
     }
     
-    /* [수정됨] 글자 수 박스: 세이지 그린 톤앤매너 */
+    /* 글자 수 박스 */
     .count-box {
-        background-color: #E3EBE6; /* 버튼색의 아주 연한 버전 (파스텔 세이지) */
-        color: #2F4F3A;            /* 진한 숲색 글씨 */
+        background-color: #E3EBE6; 
+        color: #2F4F3A;            
         padding: 12px;
         border-radius: 8px;
         font-weight: bold;
         font-size: 14px;
         margin-bottom: 10px;
         text-align: right;
-        border: 1px solid #C4D7CD; /* 은은한 테두리 */
+        border: 1px solid #C4D7CD; 
     }
     
-    /* [수정됨] 분석 박스: 왼쪽 선을 버튼색과 통일 */
+    /* 분석 박스 */
     .analysis-box {
         background-color: #FCFDFD;
-        border-left: 4px solid #557C64; /* 세이지 그린 */
+        border-left: 4px solid #557C64; 
         padding: 15px;
         border-radius: 5px;
         margin-bottom: 20px;
@@ -263,6 +271,7 @@ st.markdown("""
     문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
