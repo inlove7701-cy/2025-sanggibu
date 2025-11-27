@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- 2. [디자인] 숲속 테마 CSS ---
+# --- 2. [디자인] 숲속 테마 CSS (슬라이더: 머스터드 + 별표) ---
 st.markdown("""
     <style>
     /* 폰트 설정 */
@@ -16,7 +16,7 @@ st.markdown("""
         font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; 
     }
     
-    /* 입력창: 부드러운 테두리 */
+    /* 입력창 스타일 */
     .stTextArea textarea { 
         border-radius: 12px; 
         border: 1px solid rgba(85, 124, 100, 0.2); 
@@ -27,7 +27,7 @@ st.markdown("""
     h1 { font-weight: 700; letter-spacing: -1px; color: #2F4F3A; } 
     .subtitle { font-size: 16px; color: #666; margin-top: -15px; margin-bottom: 30px; }
     
-    /* 버튼 스타일: 세이지 그린 */
+    /* 버튼 스타일 (세이지 그린 유지) */
     .stButton button { 
         background-color: #557C64 !important; 
         color: white !important;
@@ -45,13 +45,13 @@ st.markdown("""
         color: white !important;
     }
     
-/* =================================================================
-       [수정됨] 슬라이더 스타일: 녹색 바 + 별표(★)
+    /* =================================================================
+       [수정됨] 슬라이더 스타일: 머스터드 색상 + 별표(★)
        ================================================================= */
     
-    /* 1. 슬라이더가 지나간 길 (Filled Track) 색상 변경: 세이지 그린 */
+    /* 1. 슬라이더가 지나간 길 (Filled Track) 색상: 머스터드(#D4AC0D) */
     div.stSlider > div[data-baseweb="slider"] > div > div {
-        background-color: #557C64 !important; 
+        background-color: #D4AC0D !important; 
     }
 
     /* 2. 슬라이더 손잡이(Thumb) 본체 투명화 */
@@ -61,25 +61,22 @@ st.markdown("""
         border: none !important;
     }
 
-    /* 3. 슬라이더 손잡이 자리에 '별표' 심기 */
+    /* 3. 슬라이더 손잡이 자리에 '별표' 심기 (색상: 머스터드) */
     div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"]::after {
         content: "★";             /* 별 모양 */
         font-size: 32px;          /* 별 크기 */
-        color: #557C64 !important; /* 별 색상 (버튼과 깔맞춤) */
+        color: #D4AC0D !important; /* 별 색상 (머스터드) */
         position: absolute;
-        top: -18px;               /* 위치 미세 조정 (줄 위에 오도록) */
-        left: -5px;               /* 위치 미세 조정 */
-        text-shadow: 0px 2px 4px rgba(0,0,0,0.2); /* 입체감 그림자 */
+        top: -18px;               /* 위치 미세 조정 */
+        left: -5px;               
+        text-shadow: 0px 2px 3px rgba(0,0,0,0.2); /* 입체감 */
     }
     
     /* ================================================================= */
 
-    /* 라디오 버튼 선택 박스 스타일 */
-    div[data-testid="stRadio"] {
-        background-color: transparent;
-    }
+    /* 라디오 버튼 스타일 */
+    div[data-testid="stRadio"] { background-color: transparent; }
     
-    /* 라디오 버튼 양쪽 정렬 */
     div[data-testid="stRadio"] > div[role="radiogroup"] {
         display: flex;
         justify-content: space-between;
@@ -99,39 +96,31 @@ st.markdown("""
         background-color: #F7F9F8;
     }
     
-    /* 안내 박스 */
+    /* 안내 박스 및 기타 스타일 */
     .guide-box {
-        background-color: #F7F9F8; 
-        padding: 20px; 
-        border-radius: 12px;
-        border: 1px solid #E0E5E2; 
-        margin-bottom: 25px; 
+        background-color: #F7F9F8; padding: 20px; border-radius: 12px;
+        border: 1px solid #E0E5E2; margin-bottom: 25px; 
         font-size: 14px; color: #444; line-height: 1.6;
         box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     }
     .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px; color: #557C64;}
     
-    /* 경고 문구 */
     .warning-text { color: #8D6E63; font-size: 14px; margin-top: 5px; font-weight: 500; }
     
-    /* 글자 수 박스 */
     .count-box {
         background-color: #E3EBE6; color: #2F4F3A; padding: 12px; border-radius: 8px;
         font-weight: bold; font-size: 14px; margin-bottom: 10px; text-align: right; border: 1px solid #C4D7CD; 
     }
     
-    /* 분석 박스 */
     .analysis-box {
         background-color: #FCFDFD; border-left: 4px solid #557C64; padding: 15px;
         border-radius: 5px; margin-bottom: 20px; font-size: 14px; color: #333;
     }
     
-    /* 푸터 스타일 */
     .footer {
         margin-top: 50px; text-align: center; font-size: 14px; color: #888; border-top: 1px solid #eee; padding-top: 20px;
     }
     
-    /* 카드 제목 스타일 */
     .card-title {
         font-size: 15px; font-weight: 700; color: #557C64; margin-bottom: 10px;
     }
@@ -326,4 +315,5 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
