@@ -1,31 +1,29 @@
 import streamlit as st
 import google.generativeai as genai
 
-import streamlit as st
-import google.generativeai as genai
-
 # --- 1. 페이지 설정 ---
-st.set_page_config(page_title="2025 생기부 메이트", page_icon="📝", layout="centered")
+st.set_page_config(
+    page_title="2025 생기부 메이트",
+    page_icon="📝",
+    layout="centered"
+)
 
+# --- [디자인 수정] 시스템 테마(다크/라이트) 자동 반영 CSS ---
+# 배경색과 글자색 강제 설정을 제거하고, 폰트와 테두리 등 모양만 예쁘게 다듬었습니다.
 st.markdown("""
     <style>
-    .main { background-color: #FFFFFF; font-family: 'Helvetica', sans-serif; }
-    .stTextArea textarea { background-color: #F7F9FB; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 16px; line-height: 1.6; }
-    h1 { font-weight: 700; color: #333333; letter-spacing: -1px; }
-    .subtitle { font-size: 16px; color: #888888; margin-top: -15px; margin-bottom: 30px; }
-    .stButton button { background-color: #2E86C1; color: white; border-radius: 8px; font-weight: bold; border: none; }
-    .stButton button:hover { background-color: #1B4F72; }
-    </style>
-    """, unsafe_allow_html=True)
+    /* 1. 폰트 설정 (깔끔한 고딕체) */
+    html, body, [class*="css"] {
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Helvetica', sans-serif;
+    }
+    
+    /* 2. 입력창 디자인 (테마에 따라 배경색 자동 변경되도록 투명도 활용) */
+    .stTextArea textarea {
+        border-radius: 10px;        /* 둥근 모서리 */
+        border: 1px solid rgba(128, 128, 128, 0.2); /* 은은한 테두리 */
+    }
 
-# --- 2. API 키 설정 ---
-try:
-    api_key = st.secrets["GOOGLE_API_KEY"]
-except FileNotFoundError:
-    api_key = None
-
-# --- 3. 헤더 영역 ---
-st.title("📝 2025 생기부 메이트")
+    /* 3발 메이트")
 st.markdown("<p class='subtitle'>Gift for 2025 1st Grade Teachers</p>", unsafe_allow_html=True)
 st.divider()
 
@@ -65,29 +63,18 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
             try: 
                 genai.configure(api_key=api_key)
                 
-                # --- [핵심] 사용 가능한 모델 자동 찾기 로직 ---
-                target_model = "gemini-pro" # 기본값 (최후의 수단)
-                
+                # --- [핵심] 사용 가능한 모델 자동 찾기 로직 (유지) ---
+                target_model = "gemini-pro"
                 try:
-                    # 내 키로 쓸 수 있는 모델 리스트를 다 가져옴
                     available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-                    
-                    # 우선순위: 1.5 Pro -> 1.5 Flash -> 1.0 Pro
                     if any('gemini-1.5-pro' in m for m in available_models):
-                        # 리스트에서 정확한 이름(models/gemini-1.5-pro-001 등)을 찾아서 씀
                         target_model = [m for m in available_models if 'gemini-1.5-pro' in m][0]
                     elif any('gemini-1.5-flash' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-1.5-flash' in m][0]
-                    elif any('gemini-pro' in m for m in available_models):
-                        target_model = [m for m in available_models if 'gemini-pro' in m][0]
-                        
-                except Exception as e:
-                    # 리스트 조회 실패 시 그냥 기본값 사용
+                except:
                     pass
-                
-                # 자동으로 찾은 모델 이름으로 설정
                 model = genai.GenerativeModel(target_model)
-                # ---------------------------------------------
+                # ----------------------------------------------------
 
                 if not selected_tags:
                     tags_str = "전체적인 맥락에서 가장 우수한 역량 자동 추출"
@@ -102,17 +89,17 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 위 학생의 '행동특성 및 종합의견'을 작성하세요.
                 - 문체: ~함, ~임 (개조식+서술형)
                 - 구조: 사례 -> 행동 -> 성장/평가
-                - 분량: 500자~700자
+                - 분량: 400자~600자
                 - 미사여구보다 구체적 사실(Fact) 위주로 작성할 것.
                 """
                 
                 response = model.generate_content(system_prompt)
                 
                 st.success("작성 완료!")
-                st.caption(f"※ 사용된 AI 모델: {target_model}") # 어떤 모델이 쓰였는지 보여줌
+                st.caption(f"※ 사용된 AI 모델: {target_model}")
                 st.text_area("결과 (복사해서 사용하세요)", value=response.text, height=300)
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
-                st.info("여전히 오류가 난다면, GitHub의 requirements.txt 파일 내용을 확인해주세요.")
                 
+
