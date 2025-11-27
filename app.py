@@ -8,67 +8,79 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- 2. [디자인] 반응형 CSS ---
+# --- 2. [디자인] 숲속 테마 CSS (전체적인 조화 강조) ---
 st.markdown("""
     <style>
+    /* 폰트 설정 */
     html, body, [class*="css"] { 
         font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; 
     }
     
+    /* 입력창: 부드러운 테두리 */
     .stTextArea textarea { 
         border-radius: 10px; 
-        border: 1px solid rgba(128, 128, 128, 0.2); 
+        border: 1px solid rgba(85, 124, 100, 0.2); /* 세이지 그린을 연하게 */
     }
     
-    h1 { font-weight: 700; letter-spacing: -1px; }
-    .subtitle { font-size: 16px; color: gray; margin-top: -15px; margin-bottom: 30px; }
+    /* 제목 스타일 */
+    h1 { font-weight: 700; letter-spacing: -1px; color: #2F4F3A; } /* 아주 진한 숲색 */
+    .subtitle { font-size: 16px; color: #666; margin-top: -15px; margin-bottom: 30px; }
     
-    /* [색상 변경됨] 버튼 스타일: 눈이 편안한 세이지 그린 (Sage Green) */
+    /* 버튼 스타일: 세이지 그린 (Sage Green) */
     .stButton button { 
-        background-color: #557C64 !important; /* 차분한 쑥색/세이지 그린 */
+        background-color: #557C64 !important; 
         color: white !important;
         border-radius: 8px; 
         font-weight: bold; 
         border: none; 
         transition: all 0.2s ease; 
-        padding: 0.6rem 1rem; /* 버튼을 살짝 더 도톰하게 */
+        padding: 0.6rem 1rem;
         font-size: 16px !important;
     }
-    /* 마우스 올렸을 때: 조금 더 깊은 숲색 */
     .stButton button:hover { 
         background-color: #3E5F4A !important; 
         transform: scale(1.02); 
         color: white !important;
     }
     
+    /* 안내 박스: 차분한 회색톤 */
     .guide-box {
-        background-color: rgba(240, 242, 246, 0.5);
+        background-color: #F7F9F8; /* 아주 연한 웜그레이 */
         padding: 20px;
         border-radius: 10px;
-        border: 1px solid rgba(128, 128, 128, 0.1);
+        border: 1px solid #E0E5E2;
         margin-bottom: 20px;
         font-size: 14px;
         color: #444;
         line-height: 1.6;
     }
-    .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px;}
+    .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px; color: #557C64;}
     
-    /* 글자 수 표시 박스: 버튼 색과 어울리는 연한 톤 */
-    .count-box {
-        background-color: #EDF5F0; /* 아주 연한 세이지색 배경 */
-        color: #2D4F3A;            /* 짙은 녹색 글씨 */
-        padding: 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        font-size: 14px;
-        margin-bottom: 5px;
-        text-align: right;
+    /* [수정됨] 경고 문구: 눈 아픈 빨강 -> 차분한 웜 브라운 */
+    .warning-text { 
+        color: #8D6E63; /* 부드러운 흙색/브라운 */
+        font-size: 14px; 
+        margin-top: 5px; 
+        font-weight: 500;
     }
     
-    /* 분석 박스 왼쪽 선: 버튼 색과 깔맞춤 */
+    /* [수정됨] 글자 수 박스: 세이지 그린 톤앤매너 */
+    .count-box {
+        background-color: #E3EBE6; /* 버튼색의 아주 연한 버전 (파스텔 세이지) */
+        color: #2F4F3A;            /* 진한 숲색 글씨 */
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 10px;
+        text-align: right;
+        border: 1px solid #C4D7CD; /* 은은한 테두리 */
+    }
+    
+    /* [수정됨] 분석 박스: 왼쪽 선을 버튼색과 통일 */
     .analysis-box {
-        background-color: #f8f9fa;
-        border-left: 4px solid #557C64; 
+        background-color: #FCFDFD;
+        border-left: 4px solid #557C64; /* 세이지 그린 */
         padding: 15px;
         border-radius: 5px;
         margin-bottom: 20px;
@@ -251,6 +263,7 @@ st.markdown("""
     문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
