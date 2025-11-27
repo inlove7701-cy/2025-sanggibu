@@ -80,7 +80,7 @@ st.markdown("""
     .footer {
         margin-top: 50px;
         text-align: center;
-        font-size: 12px;
+        font-size: 14px;
         color: #888;
         border-top: 1px solid #eee;
         padding-top: 20px;
@@ -251,6 +251,7 @@ st.markdown("""
     문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
