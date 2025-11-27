@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- 2. [디자인] 숲속 테마 CSS ---
+# --- 2. [디자인] 숲속 테마 CSS (강력한 적용 버전) ---
 st.markdown("""
     <style>
     /* 폰트 설정 */
@@ -45,59 +45,69 @@ st.markdown("""
         color: white !important;
     }
     
-    /* [NEW] 슬라이더(Slider) 스타일 수정: 별표(★) 모양 */
+    /* =================================================================
+       [수정 1] 슬라이더 별표(★) 강제 적용
+       ================================================================= */
     
-    /* 1. 슬라이더 지나간 길 (Track) 색상: 머스터드 */
-    div.stSlider > div[data-baseweb="slider"] > div > div {
+    /* 슬라이더 트랙(선) 색상 */
+    div[data-testid="stSlider"] div[data-baseweb="slider"] div {
         background-color: #D4AC0D !important;
     }
-    
-    /* 2. 슬라이더 손잡이(Thumb)를 별 모양으로 변신 */
-    div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"] {
+
+    /* 슬라이더 손잡이(Thumb) -> 투명하게 만들고 별 얹기 */
+    div[data-testid="stSlider"] div[role="slider"] {
         background-color: transparent !important; /* 원래 동그라미 숨김 */
-        box-shadow: none !important;              /* 그림자 제거 */
-        border: none !important;                  /* 테두리 제거 */
-        font-size: 28px;                          /* 별 크기 */
-        line-height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: -8px; /* 위치 미세 조정 */
+        box-shadow: none !important;
+        height: 30px !important; 
+        width: 30px !important;
+    }
+
+    /* 별 문자 삽입 */
+    div[data-testid="stSlider"] div[role="slider"]::after {
+        content: "★";
+        font-size: 32px;
+        color: #D4AC0D;
+        position: absolute;
+        top: -15px;   /* 위치 조정 */
+        left: -2px;   /* 위치 조정 */
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
     
-    /* 3. 별 문자(★) 삽입 */
-    div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"]::after {
-        content: "★";       /* 별표 문자 */
-        color: #D4AC0D;     /* 머스터드 색상 */
-        font-weight: bold;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* 살짝 입체감 */
-    }
+    /* =================================================================
+       [수정 2] 라디오 버튼 (모드 선택) 양쪽 꽉 차게 벌리기
+       ================================================================= */
     
-    /* 라디오 버튼 선택 박스 스타일 */
-    div[data-testid="stRadio"] {
-        background-color: transparent;
-    }
-    
-    /* 라디오 버튼 양쪽 정렬 */
+    /* 라디오 버튼 그룹 컨테이너 */
     div[data-testid="stRadio"] > div[role="radiogroup"] {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        gap: 10px;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        gap: 12px !important; /* 버튼 사이 간격 */
     }
+
+    /* 개별 라디오 버튼 (카드 형태) */
     div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-        flex-grow: 1;
+        flex: 1 1 0px !important; /* 남은 공간을 똑같이 나눠가짐 (핵심) */
         background-color: #FFFFFF;
         border: 1px solid #E0E5E2;
-        border-radius: 8px;
-        padding: 12px;
+        border-radius: 10px;
+        padding: 15px 10px !important;
+        margin: 0px !important;
+        display: flex;
         justify-content: center;
+        align-items: center;
+        transition: all 0.2s;
     }
+
+    /* 선택되거나 마우스 올렸을 때 */
     div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
         border-color: #557C64;
         background-color: #F7F9F8;
     }
     
+    /* ================================================================= */
+
     /* 안내 박스 */
     .guide-box {
         background-color: #F7F9F8; 
@@ -178,7 +188,7 @@ if student_input and len(student_input) < 30:
 # --- 6. 3단계 작성 옵션 (카드형 UI) ---
 st.markdown("### 2. 작성 옵션 설정")
 
-# [카드 1] 작성 모드 선택
+# [카드 1] 작성 모드 선택 (가로 꽉 참 + 간격 벌림)
 with st.container(border=True):
     st.markdown('<p class="card-title">① 작성 모드 선택</p>', unsafe_allow_html=True)
     mode = st.radio(
@@ -189,7 +199,7 @@ with st.container(border=True):
         label_visibility="collapsed"
     )
 
-# [카드 2] 희망 분량 설정 (별표 슬라이더 적용)
+# [카드 2] 희망 분량 설정 (별표 슬라이더)
 with st.container(border=True):
     st.markdown('<p class="card-title">② 희망 분량 (공백 포함)</p>', unsafe_allow_html=True)
     target_length = st.slider(
@@ -325,3 +335,4 @@ st.markdown("""
     문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">teacher@school.kr</a>
 </div>
 """, unsafe_allow_html=True)
+
