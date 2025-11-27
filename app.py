@@ -27,18 +27,30 @@ st.markdown("""
     .stButton button { border-radius: 8px; font-weight: bold; border: none; transition: all 0.2s ease; }
     .stButton button:hover { transform: scale(1.02); }
     
-    /* 안내 박스 스타일 (Notion Callout 느낌) */
+    /* 안내 박스 스타일 */
     .guide-box {
         background-color: rgba(240, 242, 246, 0.5); /* 반투명 회색 배경 */
         padding: 15px;
         border-radius: 10px;
         border: 1px solid rgba(128, 128, 128, 0.1);
-        margin-bottom: 20px; /* 아래 여백 추가 */
+        margin-bottom: 20px;
         font-size: 14px;
         color: #444;
         line-height: 1.6;
     }
     .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px;}
+    
+    /* 글자 수 표시 박스 스타일 */
+    .count-box {
+        background-color: #E8F6F3; /* 연한 민트색 */
+        color: #1D8348;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 5px;
+        text-align: right;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -57,7 +69,7 @@ if not api_key:
     with st.expander("🔐 관리자 설정 (API Key 입력)"):
         api_key = st.text_input("Google API Key", type="password")
 
-# [수정됨] 작성 팁을 헤더 영역으로 이동
+# 작성 팁 헤더
 st.markdown("""
 <div class="guide-box">
     <span class="guide-title">💡 풍성한 생기부를 위한 작성 팁 (3-Point)</span>
@@ -78,7 +90,7 @@ student_input = st.text_area(
     label_visibility="collapsed"
 )
 
-# 입력 글자수 체크 및 가이드
+# 입력 글자수 체크
 if student_input and len(student_input) < 30:
     st.markdown("<p style='color:#e67e22; font-size:14px;'>⚠️ 내용이 조금 짧습니다. 3가지 에피소드가 들어갔나요?</p>", unsafe_allow_html=True)
 
@@ -107,26 +119,20 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 genai.configure(api_key=api_key)
                 
                 # --- [핵심] 사용 가능한 모델 자동 찾기 로직 ---
-                target_model = "gemini-pro" # 기본값 (최후의 수단)
+                target_model = "gemini-pro" # 기본값
                 
                 try:
-                    # 내 키로 쓸 수 있는 모델 리스트를 다 가져옴
                     available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
                     
-                    # 우선순위: 1.5 Pro -> 1.5 Flash -> 1.0 Pro
                     if any('gemini-1.5-pro' in m for m in available_models):
-                        # 리스트에서 정확한 이름(models/gemini-1.5-pro-001 등)을 찾아서 씀
                         target_model = [m for m in available_models if 'gemini-1.5-pro' in m][0]
                     elif any('gemini-1.5-flash' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-1.5-flash' in m][0]
                     elif any('gemini-pro' in m for m in available_models):
                         target_model = [m for m in available_models if 'gemini-pro' in m][0]
-                        
                 except Exception as e:
-                    # 리스트 조회 실패 시 그냥 기본값 사용
                     pass
                 
-                # 자동으로 찾은 모델 이름으로 설정
                 model = genai.GenerativeModel(target_model)
                 # ---------------------------------------------
 
@@ -143,37 +149,16 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 위 학생의 '행동특성 및 종합의견'을 작성하세요.
                 - 문체: ~함, ~임 (개조식+서술형)
                 - 구조: 사례 -> 행동 -> 성장/평가
-                - 분량: 400자~600자
-                - 미사여구보다 구체적 사실(Fact) 위주로 작성할 것.
-          # 작성 원칙 (매우 중요)
-                1. **No Hallucination (날조 금지)**: 사용자가 입력한 내용에 없는 사실을 절대 지어내지 마십시오. 만약 입력된 정보가 부족하면 문장을 화려하게 꾸미기보다 있는 사실을 담백하게 서술하십시오.
-                2. **3-Point Rule (3요소 포함)**: 입력된 텍스트에서 **최소 3가지만큼의 구체적인 에피소드나 키워드**를 찾아내어 문단에 포함시키십시오. (만약 입력 정보가 3가지 미만이라면 있는 것만 활용하십시오.)
-                3. **Structure (구성)**: [구체적 사례] → [학생의 행동/태도] → [성장/잠재력 평가]의 흐름을 유지하십시오.
+                - 분량: 500자 내외
                 
-                위 원칙을 지켜 500자~700자 분량의 '행동특성 및 종합의견'을 작성하세요.
+                # 작성 원칙 (매우 중요)
+                1. **No Hallucination (날조 금지)**: 입력된 내용에 없는 사실을 절대 지어내지 마십시오.
+                2. **3-Point Rule (3요소 포함)**: 입력된 텍스트에서 최소 3가지 이상의 에피소드를 포함하십시오.
+                3. **Structure (구성)**: [구체적 사례] → [행동/태도] → [성장/평가] 흐름 유지.
                 """
                 
-         response = model.generate_content(system_prompt)
-                result_text = response.text
-                
-                # --- [추가됨] 글자 수 계산 로직 ---
-                char_count = len(result_text) # 공백 포함
-                char_count_no_space = len(result_text.replace(" ", "").replace("\n", "")) # 공백/줄바꿈 제외
-                
-                st.success("작성 완료!")
-                st.caption(f"※ 사용된 AI 모델: {target_model}") # 어떤 모델이 쓰였는지 보여줌
-# 글자 수 표시 (오른쪽 정렬된 민트색 박스)
-                st.markdown(f"""
-                <div class="count-box">
-                    📊 공백 포함: {char_count}자 | 공백 제외: {char_count_no_space}자
-                </div>
-                """, unsafe_allow_html=True)
-                
-                st.caption(f"※ 팩트 기반 작성 모드 동작 중 ({target_model})")
-                st.text_area("결과 (복사해서 사용하세요)", value=result_text, height=350)
-            except Exception as e:
-                st.error(f"오류가 발생했습니다: {e}")
-                st.info("여전히 오류가 난다면, GitHub의 requirements.txt 파일 내용을 확인해주세요.")
+                # [수정 포인트] 들여쓰기 오류 수정됨
+                response = model.generate_content(system_prompt
 
 
 
