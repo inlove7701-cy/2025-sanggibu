@@ -1,76 +1,175 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. 페이지 설정
-st.set_page_config(page_title="2025 생기부 메이트", layout="centered")
-st.title("🎁 2025 생기부 메이트")
-st.markdown("<p style='color:#888;'>Gift for 2025 1st Grade Teachers</p>", unsafe_allow_html=True)
-st.divider()
+# --- 1. 페이지 설정 (Notion 스타일) ---
+st.set_page_config(
+    page_title="2025 생기부 메이트",
+    page_icon="📝",
+    layout="centered"
+)
 
-# --- [중요] API 키 설정 (사용자 입력 없이 서버에서 가져옴) ---
-# Streamlit Cloud의 Secrets에서 키를 가져옵니다.
+# CSS로 폰트, 여백, 색상 조정 (깔끔한 화이트 톤)
+st.markdown("""
+    <style>
+    /* 전체 배경 및 폰트 설정 */
+    .main {
+        background-color: #FFFFFF;
+        font-family: 'Helvetica', 'Apple SD Gothic Neo', sans-serif;
+    }
+    /* 입력창 스타일 */
+    .stTextArea textarea {
+        background-color: #F7F9FB;
+        border: 1px solid #E0E0E0;
+        border-radius: 8px;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    /* 헤더 스타일 */
+    h1 {
+        font-weight: 700;
+        color: #333333;
+        letter-spacing: -1px;
+    }
+    .subtitle {
+        font-size: 16px;
+        color: #888888;
+        font-weight: 400;
+        margin-top: -15px;
+        margin-bottom: 30px;
+    }
+    /* 버튼 스타일 */
+    .stButton button {
+        background-color: #2E86C1;
+        color: white;
+        border-radius: 8px;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border: none;
+    }
+    .stButton button:hover {
+        background-color: #1B4F72;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- 2. API 키 설정 (Secrets에서 가져오기) ---
 try:
+    # Streamlit Cloud의 Secrets에 저장된 키를 가져옵니다.
     api_key = st.secrets["GOOGLE_API_KEY"]
 except FileNotFoundError:
-    # 내 컴퓨터에서 테스트할 때를 위한 예외 처리 (혹은 키 설정을 안 했을 때)
-    st.error("API 키가 설정되지 않았습니다. 관리자에게 문의하세요.")
-    st.stop()
+    # 로컬 테스트용 (Secrets가 없을 경우 에러 메시지 대신 안내)
+    api_key = None
 
-# 2. 사이드바 (키 입력창 제거됨, 옵션만 남음)
-with st.sidebar:
-    st.header("옵션 선택")
-    st.info("💡 선생님들을 위해 이미 설정이 완료되어 있습니다. 바로 사용하세요!")
-    
-    options = ["자동(전체)", "학업역량(탐구력)", "인성/공동체(나눔)", "진로적성(전공)", "발전가능성(성장)"]
-    selected_mode = st.selectbox("강조할 영역 선택", options)
+# --- 3. 헤더 영역 ---
+st.title("📝 2025 생기부 메이트")
+st.markdown("<p class='subtitle'>Gift for 2025 1st Grade Teachers</p>", unsafe_allow_html=True)
+st.divider()
 
-# 3. 대화 기록 초기화
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-    st.session_state.messages.append({
-        "role": "assistant", 
-        "content": "선생님, 안녕하세요! 학생의 관찰 내용을 편하게 적어주시면 생기부 문구로 만들어 드립니다."
-    })
+# API 키가 없을 경우 입력창 표시 (배포 전 테스트용)
+if not api_key:
+    with st.expander("🔐 관리자 설정 (API Key 입력)"):
+        api_key = st.text_input("Google API Key", type="password", help="Google AI Studio에서 발급받은 키를 입력하세요.")
 
-# 4. 대화 내용 표시
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+# --- 4. 입력 영역 (Input) ---
+st.markdown("### 1. 학생 관찰 내용")
+student_input = st.text_area(
+    "학생의 에피소드, 특징, 성격 등을 자유롭게 적어주세요.",
+    height=250,
+    placeholder="예시:\n- 수학 성적은 4등급이지만 수업 시간에 질문을 제일 많이 함.\n- 체육대회 때 반티 디자인 문제로 친구들이 싸울 때 중재해서 해결함.\n- 지각이 잦았으나 상담 후 알람을 3개 맞추고 2학기엔 개근함.\n- 급식 당번을 아무도 안 하려 할 때 먼저 손들고 함."
+)
 
-# 5. 사용자 입력 처리
-if prompt := st.chat_input("예: 수학 질문이 많고, 체육대회 때 응원단장을 함."):
-    
-    st.chat_message("user").markdown(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
+# --- 5. 필터 및 옵션 영역 (Filter) ---
+st.markdown("### 2. 강조할 핵심 키워드 선택")
+st.caption("강조하고 싶은 영역을 선택하세요. (중복 선택 가능 / 선택하지 않으면 AI가 자동으로 판단합니다)")
 
-    with st.chat_message("assistant"):
-        message_placeholder = st.empty()
-        full_response = ""
-        
-        try:
-            # 구글 Gemini 설정
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
+# 7대 영역 + 자동 판단 옵션 정의
+filter_options = [
+    "👑 AI 입학사정관 자동 판단 (추천)", 
+    "📘 학업 역량 (탐구/심화)", 
+    "🤝 공동체 역량 (리더십/협력)", 
+    "🚀 진로 역량 (전공적합성)", 
+    "🌱 발전 가능성 (성장/극복)", 
+    "🎨 창의적 문제해결력", 
+    "😊 인성/나눔/배려", 
+    "⏰ 성실성/규칙준수"
+]
 
-            system_prompt = f"""
-            당신은 고등학교 생활기록부 작성 전문가입니다. 
-            사용자가 입력한 학생 정보를 바탕으로 [{selected_mode}] 위주로 
-            학교생활기록부 '행동특성 및 종합의견'에 들어갈 문장을 작성하세요.
-            문체는 '~함', '~임'으로 끝나는 개조식과 서술형을 적절히 섞어주세요.
-            """
-            
-            response = model.generate_content(
-                f"{system_prompt}\n\n[학생 정보]: {prompt}",
-                stream=True
-            )
+# st.pills는 Streamlit 1.40.0 이상에서 작동하는 알약 모양 버튼입니다. (다중 선택 가능)
+selected_tags = st.pills(
+    "키워드 버튼",
+    options=filter_options,
+    selection_mode="multi",
+    label_visibility="collapsed" # 라벨 숨김 (깔끔하게)
+)
 
-            for chunk in response:
-                if chunk.text:
-                    full_response += chunk.text
-                    message_placeholder.markdown(full_response + "▌")
-            
-            message_placeholder.markdown(full_response)
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
+# --- 6. 실행 및 결과 영역 (Action & Result) ---
+st.markdown("") # 여백
+if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_width=True):
+    if not api_key:
+        st.error("⚠️ API Key가 설정되지 않았습니다.")
+    elif not student_input:
+        st.warning("⚠️ 학생 관찰 내용을 입력해주세요!")
+    else:
+        with st.spinner('AI 입학사정관이 학생의 강점을 분석하여 문장을 다듬고 있습니다...'):
+            try:
+                # 구글 Gemini 설정
+                genai.configure(api_key=api_key)
+                model = genai.GenerativeModel('gemini-1.5-flash')
 
-        except Exception as e:
-            st.error(f"오류가 발생했습니다: {e}")
+                # --- [핵심] 입학사정관 페르소나 프롬프트 설계 ---
+                
+                # 선택된 태그 정리
+                if not selected_tags:
+                    tags_str = "특별히 지정된 영역 없음 (전체적인 맥락에서 가장 우수한 역량을 스스로 판단하여 추출)"
+                else:
+                    tags_str = ", ".join(selected_tags)
+
+                system_prompt = f"""
+                # Role (역할)
+                당신은 대학 입학사정관의 관점을 완벽하게 갖춘 대한민국 고등학교의 베테랑 담임 교사입니다.
+                학생의 1년간의 행동특성 및 종합의견을 작성해야 합니다.
+
+                # Input Data (입력 정보)
+                1. 학생 관찰 내용: {student_input}
+                2. 교사가 강조하고 싶은 영역: [{tags_str}]
+
+                # Instruction (지시 사항)
+                1. **분석 단계**: 입력된 관찰 내용(Facts)을 분석하여 학생의 잠재력, 인성, 학업 태도를 파악하십시오.
+                2. **선별 단계**: 
+                   - 만약 'AI 입학사정관 자동 판단'이 선택되었거나 선택된 영역이 없다면, 대학 입시에서 가장 긍정적으로 평가받을 수 있는 포인트(자기주도성, 문제해결력, 변화와 성장 등)를 최우선으로 선별하십시오.
+                   - 특정 영역이 선택되었다면, 해당 영역과 관련된 에피소드를 중심으로 서술하되, 전체적인 흐름이 자연스럽게 이어지도록 하십시오.
+                3. **작성 단계**:
+                   - 문체: '~함', '~임', '~보임', '~평가됨'과 같은 개조식과 서술형을 적절히 혼용하여 단정하고 전문적인 어조를 유지하십시오.
+                   - 구조: [구체적 사례(Fact)] -> [학생의 행동 및 과정(Action)] -> [배우고 느낀 점/성장한 점/교사의 평가(Impact)]의 흐름을 따르십시오.
+                   - 분량: 500자~800자 내외의 잘 정돈된 하나의 문단으로 작성하십시오.
+                   - **주의**: 추상적인 칭찬(착하다, 성실하다)만 나열하지 말고, 반드시 입력된 에피소드를 근거로 제시하십시오. 없는 사실을 지어내지 마십시오.
+
+                # Output Format (출력 예시)
+                (서론 없이 바로 생기부 입력용 텍스트만 출력)
+                평소 타인의 의견을 경청하고... (중략) ... 이러한 경험을 통해 공동체의 가치를 실현하는 인재로 성장함.
+                """
+                
+                # AI 호출
+                response = model.generate_content(system_prompt)
+                result_text = response.text
+
+                # 결과 출력
+                st.success("작성이 완료되었습니다!")
+                st.markdown("### 📋 생성된 생기부 초안")
+                st.info("아래 내용을 복사하여 나이스(NEIS)에 붙여넣거나 수정하여 사용하세요.")
+                
+                # 텍스트 영역에 결과 표시 (복사하기 편하게)
+                st.text_area("결과", value=result_text, height=300)
+                
+                # 다시 쓰기 팁 제공
+                with st.expander("💡 결과가 마음에 들지 않나요?"):
+                    st.markdown("""
+                    - **내용이 너무 짧다면?** : 입력창에 에피소드를 조금 더 구체적으로(육하원칙) 적어주세요.
+                    - **특정 부분을 강조하고 싶다면?** : 위 버튼에서 해당 영역만 선택해서 다시 생성해보세요.
+                    - **말투가 어색하다면?** : 입력창 마지막에 "조금 더 부드럽게 써줘"라고 메모를 남겨보세요.
+                    """)
+
+            except Exception as e:
+                st.error(f"오류가 발생했습니다: {e}")
+                st.caption("일시적인 네트워크 오류이거나 API Key 문제일 수 있습니다.")
+                
