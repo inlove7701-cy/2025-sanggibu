@@ -92,27 +92,28 @@ student_input = st.text_area(
 if student_input and len(student_input) < 30:
     st.markdown("<p style='color:#e67e22; font-size:14px;'>⚠️ 내용이 조금 짧습니다. 3가지 에피소드가 들어갔나요?</p>", unsafe_allow_html=True)
 
-# --- 6. 필터 영역 ---
-st.markdown("### 2. 강조할 핵심 키워드 선택")
+# --- 6. 옵션 영역 (키워드 + 글자수) ---
+col1, col2 = st.columns([1, 1]) 
+
+st.markdown("### 2. 강조할 핵심 키워드")
 filter_options = [
     "👑 AI 입학사정관 자동 판단", "📘 학업 역량", "🤝 공동체 역량", 
     "🚀 진로 역량", "🌱 발전 가능성", "🎨 창의적 문제해결력", 
     "😊 인성/나눔/배려", "⏰ 성실성/규칙준수"
 ]
 try:
-    selected_tags = st.pills("이 학생의 강조하고 싶은 역량_가장 앞에 노출됩니다. 미선택시 AI 입학사정관이 판단한 중요도 순으로 노출되요~! ^^", options=filter_options, selection_mode="multi")
+    selected_tags = st.pills("키워드 버튼", options=filter_options, selection_mode="multi")
 except:
     selected_tags = st.multiselect("키워드 선택", filter_options)
 
-# [NEW] 글자 수 조절 슬라이더 추가
-st.markdown("### 3. 희망 분량 설정")
+st.markdown("### 3. 희망 분량 설정 (종합본 기준)")
 target_length = st.slider(
     "생성할 글자 수 (공백 포함)",
     min_value=300,
     max_value=1000,
     value=500,
     step=50,
-    help="AI가 이 분량에 맞춰서 내용을 늘리거나 줄입니다."
+    help="AI가 최종 종합본을 이 분량에 맞춰 작성합니다."
 )
 
 # --- 7. 실행 및 결과 영역 ---
@@ -144,34 +145,53 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                     tags_str = "전체적인 맥락에서 가장 우수한 역량 자동 추출"
                 else:
                     tags_str = ", ".join(selected_tags)
-
-                # [수정됨] 프롬프트에 target_length 반영
+# [핵심] 분리 출력을 위한 프롬프트 변경
                 system_prompt = f"""
                 당신은 입학사정관 관점을 가진 고등학교 교사입니다.
                 입력 정보: {student_input}
                 강조 영역: [{tags_str}]
                 
-                위 학생의 '행동특성 및 종합의견'을 작성하세요.
+                다음 두 가지 파트로 나누어 출력하세요. 두 파트 사이에는 반드시 "---SPLIT---" 이라고 적어 구분해주세요.
+
+                [Part 1] 영역별 분석 (개조식)
+                - 입력된 내용을 [인성 / 학업 / 진로 / 공동체] 등으로 분류하여 핵심 키워드와 내용을 요약 정리할 것.
+                
+                ---SPLIT---
+
+                [Part 2] 행동특성 및 종합의견 (서술형 종합본)
+                - 실제 생기부에 입력할 완성된 줄글 형태.
                 - 문체: ~함, ~임 (개조식+서술형)
                 - 구조: 사례 -> 행동 -> 성장/평가
                 - 목표 분량: 공백 포함 약 {target_length}자 (오차범위 ±10%)
-                
-                # 작성 원칙
-                1. 날조 금지 (No Hallucination)
-                2. 3요소 포함 (3-Point Rule)
-                3. 분량 준수: 입력 내용이 적더라도 살을 붙여서 {target_length}자에 가깝게 작성하시오.
+                - 주의: 날조 금지, 3요소 포함
                 """
 
                 response = model.generate_content(system_prompt)
-                result_text = response.text
+                full_text = response.text
                 
-# 글자 수 계산
-                char_count = len(result_text)
-                char_count_no_space = len(result_text.replace(" ", "").replace("\n", ""))
+                # [핵심] 결과 쪼개기 (분석본 vs 종합본)
+                if "---SPLIT---" in full_text:
+                    parts = full_text.split("---SPLIT---")
+                    analysis_text = parts[0].strip()
+                    final_text = parts[1].strip()
+                else:
+                    analysis_text = "영역별 분석을 생성하지 못했습니다."
+                    final_text = full_text
+
+                # 글자 수 계산 (종합본만 계산)
+                char_count = len(final_text)
+                char_count_no_space = len(final_text.replace(" ", "").replace("\n", ""))
                 
                 st.success("작성 완료!")
                 
-                # 글자 수 표시
+                # 1. 영역별 분석 보여주기 (Expander로 깔끔하게)
+                with st.expander("🔍 영역별 분석 내용 확인하기 (클릭)", expanded=True):
+                    st.markdown(analysis_text)
+                
+                st.markdown("---")
+                st.markdown("### 📋 최종 제출용 종합본")
+
+                # 2. 글자 수 표시 (종합본 기준)
                 st.markdown(f"""
                 <div class="count-box">
                     📊 목표: {target_length}자 | 실제: {char_count}자 (공백제외 {char_count_no_space}자)
@@ -179,14 +199,9 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 """, unsafe_allow_html=True)
                 
                 st.caption(f"※ 팩트 기반 작성 모드 동작 중 ({target_model})")
-                st.text_area("결과 (복사해서 사용하세요)", value=result_text, height=350)
+                
+                # 3. 최종 결과 텍스트 영역
+                st.text_area("결과 (복사해서 나이스에 붙여넣으세요)", value=final_text, height=350)
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
-
-
-
-
-
-
-
