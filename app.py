@@ -158,7 +158,8 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 """
                 
                 # [수정 포인트] 들여쓰기 오류 수정됨
-                response = model.generate_content(system_prompt
+                response = model.generate_content(system_prompt)
+
 
 
 
