@@ -58,7 +58,7 @@ except FileNotFoundError:
     api_key = None
 
 # --- 3. 헤더 영역 ---
-st.title("📝 2025 행발발 메이트")
+st.title("📝 2025 생기부 메이트")
 st.markdown("<p class='subtitle'>Gift for 2025 1st Grade Teachers</p>", unsafe_allow_html=True)
 st.divider()
 
@@ -124,7 +124,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 위 학생의 '행동특성 및 종합의견'을 작성하세요.
                 - 문체: ~함, ~임 (개조식+서술형)
                 - 구조: 사례 -> 행동 -> 성장/평가
-                - 분량: 400자~600자
+                - 분량: 500자~700자
                 - 미사여구보다 구체적 사실(Fact) 위주로 작성할 것.
                 """
                 
