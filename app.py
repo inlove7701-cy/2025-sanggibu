@@ -45,34 +45,35 @@ st.markdown("""
         color: white !important;
     }
     
-    /* [NEW] 슬라이더(Slider) 스타일 수정: 별표(★) 모양 */
+/* =================================================================
+       [수정됨] 슬라이더 스타일: 녹색 바 + 별표(★)
+       ================================================================= */
     
-    /* 1. 슬라이더 지나간 길 (Track) 색상: 머스터드 */
+    /* 1. 슬라이더가 지나간 길 (Filled Track) 색상 변경: 세이지 그린 */
     div.stSlider > div[data-baseweb="slider"] > div > div {
-        background-color: #D4AC0D !important;
+        background-color: #557C64 !important; 
     }
-    
-    /* 2. 슬라이더 손잡이(Thumb)를 별 모양으로 변신 */
+
+    /* 2. 슬라이더 손잡이(Thumb) 본체 투명화 */
     div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"] {
-        background-color: transparent !important; /* 원래 동그라미 숨김 */
-        box-shadow: none !important;              /* 그림자 제거 */
-        border: none !important;                  /* 테두리 제거 */
-        font-size: 28px;                          /* 별 크기 */
-        line-height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: -8px; /* 위치 미세 조정 */
+        background-color: transparent !important; /* 빨간 동그라미 숨김 */
+        box-shadow: none !important;
+        border: none !important;
     }
-    
-    /* 3. 별 문자(★) 삽입 */
+
+    /* 3. 슬라이더 손잡이 자리에 '별표' 심기 */
     div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"]::after {
-        content: "★";       /* 별표 문자 */
-        color: #D4AC0D;     /* 머스터드 색상 */
-        font-weight: bold;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* 살짝 입체감 */
+        content: "★";             /* 별 모양 */
+        font-size: 32px;          /* 별 크기 */
+        color: #557C64 !important; /* 별 색상 (버튼과 깔맞춤) */
+        position: absolute;
+        top: -18px;               /* 위치 미세 조정 (줄 위에 오도록) */
+        left: -5px;               /* 위치 미세 조정 */
+        text-shadow: 0px 2px 4px rgba(0,0,0,0.2); /* 입체감 그림자 */
     }
     
+    /* ================================================================= */
+
     /* 라디오 버튼 선택 박스 스타일 */
     div[data-testid="stRadio"] {
         background-color: transparent;
@@ -325,3 +326,4 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
