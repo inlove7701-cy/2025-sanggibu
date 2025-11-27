@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- 2. [디자인] 숲속 테마 CSS (슬라이더: 머스터드 + 별표) ---
+# --- 2. [디자인] 숲속 테마 CSS (슬라이더 색상 로직 수정됨) ---
 st.markdown("""
     <style>
     /* 폰트 설정 */
@@ -27,7 +27,7 @@ st.markdown("""
     h1 { font-weight: 700; letter-spacing: -1px; color: #2F4F3A; } 
     .subtitle { font-size: 16px; color: #666; margin-top: -15px; margin-bottom: 30px; }
     
-    /* 버튼 스타일 (세이지 그린 유지) */
+    /* 버튼 스타일: 세이지 그린 */
     .stButton button { 
         background-color: #557C64 !important; 
         color: white !important;
@@ -46,30 +46,38 @@ st.markdown("""
     }
     
     /* =================================================================
-       [수정됨] 슬라이더 스타일: 머스터드 색상 + 별표(★)
+       [핵심 수정] 슬라이더 스타일링 (왼쪽:머스터드 / 오른쪽:녹색 / 별표)
        ================================================================= */
     
-    /* 1. 슬라이더가 지나간 길 (Filled Track) 색상: 머스터드(#D4AC0D) */
-    div.stSlider > div[data-baseweb="slider"] > div > div {
-        background-color: #D4AC0D !important; 
+    /* 1. 슬라이더 배경 (오른쪽/빈 부분) -> 녹색(#557C64) */
+    div[data-testid="stSlider"] div[data-baseweb="slider"] > div {
+        background-color: #557C64 !important; 
+        border-radius: 10px;
     }
 
-    /* 2. 슬라이더 손잡이(Thumb) 본체 투명화 */
-    div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"] {
-        background-color: transparent !important; /* 빨간 동그라미 숨김 */
+    /* 2. 슬라이더 채워진 부분 (왼쪽/지나간 부분) -> 머스터드(#D4AC0D) */
+    div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
+        background-color: #D4AC0D !important;
+    }
+
+    /* 3. 슬라이더 손잡이(Thumb) 본체 숨기기 */
+    div[data-testid="stSlider"] div[role="slider"] {
+        background-color: transparent !important;
         box-shadow: none !important;
         border: none !important;
+        height: 24px; 
+        width: 24px; 
     }
 
-    /* 3. 슬라이더 손잡이 자리에 '별표' 심기 (색상: 머스터드) */
-    div.stSlider > div[data-baseweb="slider"] > div > div > div[role="slider"]::after {
+    /* 4. 슬라이더 손잡이 위치에 '별표' 심기 (색상: 머스터드) */
+    div[data-testid="stSlider"] div[role="slider"]::after {
         content: "★";             /* 별 모양 */
         font-size: 32px;          /* 별 크기 */
         color: #D4AC0D !important; /* 별 색상 (머스터드) */
         position: absolute;
-        top: -18px;               /* 위치 미세 조정 */
+        top: -18px;               
         left: -5px;               
-        text-shadow: 0px 2px 3px rgba(0,0,0,0.2); /* 입체감 */
+        text-shadow: 0px 1px 3px rgba(0,0,0,0.3); /* 약간의 그림자 */
     }
     
     /* ================================================================= */
@@ -315,5 +323,6 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
