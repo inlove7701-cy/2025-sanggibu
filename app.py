@@ -189,16 +189,20 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
 
                 generation_config = genai.types.GenerationConfig(temperature=temp)
                 model = genai.GenerativeModel(target_model, generation_config=generation_config)
-
+# ====================================================
+                # [수정된 부분] 키워드 선택 여부에 따른 분기 처리
+                # ====================================================
                 if not selected_tags:
-                    tags_str = "전체적인 맥락에서 가장 우수한 역량 자동 추출"
+                    # 선택된 키워드가 없을 때: 정석 순서 강제
+                    tags_str = "별도의 키워드 지정 없음. 따라서 반드시 [인성/소통] -> [학업/태도] -> [진로/관심] -> [발전가능성] 순서로 내용을 전개할 것."
                 else:
-                    tags_str = ", ".join(selected_tags)
+                    # 키워드가 있을 때: 해당 키워드 중심
+                    tags_str = f"다음 핵심 키워드를 중심으로 서술: {', '.join(selected_tags)}"
 
                 system_prompt = f"""
                 당신은 입학사정관 관점을 가진 고등학교 교사입니다.
                 입력 정보: {student_input}
-                강조 영역: [{tags_str}]
+                작성 지침: [{tags_str}]
                 
                 다음 두 가지 파트로 나누어 출력하세요. 구분선: "---SPLIT---"
 
@@ -213,6 +217,10 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                 - 목표 분량: 공백 포함 약 {target_length}자 (오차범위 ±10%)
                 
                 {prompt_instruction}
+
+                # ★★★ 구조 및 순서 (Structure & Order) ★★★
+                1. **기본 순서 준수**: 특별히 강조할 키워드가 지정되지 않았다면, 글의 흐름을 **[인성/사회성] → [학업역량] → [진로적성] → [발전가능성]** 순서로 배치하십시오.
+                2. **유기적 연결**: 각 영역을 딱딱하게 끊지 말고, "또한", "이러한 태도는 ~으로 이어져" 등의 접속어를 활용해 하나의 글처럼 자연스럽게 연결하십시오.
                 """
 
                 response = model.generate_content(system_prompt)
@@ -257,4 +265,5 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
