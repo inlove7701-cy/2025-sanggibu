@@ -73,6 +73,7 @@ st.markdown("""
 <div class="guide-box">
     <span class="guide-title">💡 풍성한 생기부를 위한 작성 팁 (3-Point)</span>
     좋은 평가를 위해 아래 3가지 요소가 포함되도록 에피소드를 적어주세요.<br>
+    [예시]<br>
     1. <b>(학업)</b> 수학 점수는 낮으나 오답노트를 꼼꼼히 작성함<br>
     2. <b>(인성)</b> 체육대회 때 뒷정리를 도맡아 함<br>
     3. <b>(진로)</b> 동아리에서 코딩 멘토링 활동을 함
@@ -175,6 +176,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+
 
 
 
