@@ -109,8 +109,8 @@ except:
 st.markdown("### 3. 희망 분량 설정 (종합본 기준)")
 target_length = st.slider(
     "생성할 글자 수 (공백 포함)",
-    min_value=300,
-    max_value=1000,
+    min_value=200,
+    max_value=600,
     value=500,
     step=50,
     help="AI가 최종 종합본을 이 분량에 맞춰 작성합니다."
@@ -211,7 +211,9 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
 # --- 8. [NEW] 저작권 및 이메일 표시 (푸터) ---
 st.markdown("""
 <div class="footer">
-    © 2025 <b>[Chaeyun, B. with Ai]</b>. All rights reserved.<br>
+<br>
+    © 2025 <b>Chaeyun teacher with Ai</b>. All rights reserved.<br>
     문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
