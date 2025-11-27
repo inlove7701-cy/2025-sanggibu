@@ -99,7 +99,7 @@ filter_options = [
     "😊 인성/나눔/배려", "⏰ 성실성/규칙준수"
 ]
 try:
-    selected_tags = st.pills("키워드 버튼", options=filter_options, selection_mode="multi")
+    selected_tags = st.pills("이 학생의 강조하고 싶은 역량_가장 앞에 노출됩니다", options=filter_options, selection_mode="multi")
 except:
     selected_tags = st.multiselect("키워드 선택", filter_options)
 
@@ -111,7 +111,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
     elif not student_input:
         st.warning("⚠️ 학생 관찰 내용을 입력해주세요!")
     else:
-        with st.spinner('선생님의 생각을 AI가 정리중입니다...'):
+        with st.spinner('선생님의 생각을 AI가 쥐어짜며 정리중입니다...'):
             try:
                 genai.configure(api_key=api_key)
 
@@ -175,5 +175,6 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+
 
 
