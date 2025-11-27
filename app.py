@@ -208,3 +208,10 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
 
+# --- 8. [NEW] 저작권 및 이메일 표시 (푸터) ---
+st.markdown("""
+<div class="footer">
+    © 2025 <b>[Chaeyun, B. with Ai]</b>. All rights reserved.<br>
+    문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
+</div>
+""", unsafe_allow_html=True)
