@@ -111,7 +111,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
     elif not student_input:
         st.warning("⚠️ 학생 관찰 내용을 입력해주세요!")
     else:
-        with st.spinner('AI 입학사정관이 분석 중입니다...'):
+        with st.spinner('선생님의 생각을 AI가 정리중입니다...'):
             try:
                 genai.configure(api_key=api_key)
 
@@ -175,4 +175,5 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+
 
