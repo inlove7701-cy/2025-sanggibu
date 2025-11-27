@@ -114,8 +114,7 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
             try:
                 # 구글 Gemini 설정
                 genai.configure(api_key=api_key)
-                model = genai.GenerativeModel('gemini-pro')
-
+model = genai.GenerativeModel('gemini-1.5-flash')
                 # --- [핵심] 입학사정관 페르소나 프롬프트 설계 ---
                 
                 # 선택된 태그 정리
@@ -173,4 +172,5 @@ if st.button("✨ 생기부 문구 생성하기", type="primary", use_container_
                 st.error(f"오류가 발생했습니다: {e}")
                 st.caption("일시적인 네트워크 오류이거나 API Key 문제일 수 있습니다.")
                 
+
 
