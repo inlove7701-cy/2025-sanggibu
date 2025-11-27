@@ -8,143 +8,45 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- 2. [디자인] 숲속 테마 CSS (슬라이더 선 색상 정밀 수정) ---
+# --- 2. [디자인] 숲속 테마 CSS ---
 st.markdown("""
     <style>
-    /* 폰트 설정 */
-    html, body, [class*="css"] { 
-        font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; 
-    }
-    
-    /* 입력창: 부드러운 테두리 */
-    .stTextArea textarea { 
-        border-radius: 12px; 
-        border: 1px solid rgba(85, 124, 100, 0.2); 
-        background-color: #FAFCFA; 
-    }
-    
-    /* 제목 스타일 */
+    html, body, [class*="css"] { font-family: 'Pretendard', sans-serif; }
+    .stTextArea textarea { border-radius: 12px; border: 1px solid rgba(85, 124, 100, 0.2); background-color: #FAFCFA; }
     h1 { font-weight: 700; letter-spacing: -1px; color: #2F4F3A; } 
     .subtitle { font-size: 16px; color: #666; margin-top: -15px; margin-bottom: 30px; }
     
-    /* 버튼 스타일: 세이지 그린 */
     .stButton button { 
-        background-color: #557C64 !important; 
-        color: white !important;
-        border-radius: 10px; 
-        font-weight: bold; 
-        border: none; 
-        transition: all 0.2s ease; 
-        padding: 0.8rem 1rem; 
-        font-size: 16px !important;
-        width: 100%; 
+        background-color: #557C64 !important; color: white !important;
+        border-radius: 10px; font-weight: bold; border: none; 
+        transition: all 0.2s ease; padding: 0.8rem 1rem; font-size: 16px !important; width: 100%; 
     }
-    .stButton button:hover { 
-        background-color: #3E5F4A !important; 
-        transform: scale(1.01); 
-        color: white !important;
-    }
-    /* =================================================================
-       [수정됨] 슬라이더 스타일: 왼쪽(머스터드) - 별 - 오른쪽(회색)
-       ================================================================= */
+    .stButton button:hover { background-color: #3E5F4A !important; transform: scale(1.01); }
     
-    /* 1. 슬라이더 배경 트랙 (오른쪽/남은 부분) -> 회색(#E0E0E0)으로 변경 */
-    div[data-testid="stSlider"] div[data-baseweb="slider"] > div {
-        background-color: #E0E0E0 !important; /* 녹색 뺌 */
-        border-radius: 10px;
-        height: 6px !important; /* 선 두께 얇게 유지 */
-    }
-
-    /* 2. 슬라이더 채워진 부분 (왼쪽/지나간 부분) -> 머스터드(#D4AC0D) 유지 */
-    div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div {
-        background-color: #D4AC0D !important;
-        height: 6px !important;
-    }
-
-    /* 3. 슬라이더 손잡이(Thumb) 본체 숨기기 */
-    div[data-testid="stSlider"] div[role="slider"] {
-        background-color: transparent !important;
-        box-shadow: none !important;
-        border: none !important;
-        height: 24px; 
-        width: 24px; 
-    }
-
-    /* 4. 슬라이더 손잡이 위치에 '별표' 심기 (색상: 머스터드) */
+    /* 슬라이더 스타일 */
+    div[data-testid="stSlider"] div[data-baseweb="slider"] > div { background-color: #E0E0E0 !important; border-radius: 10px; height: 6px !important; }
+    div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div { background-color: #D4AC0D !important; height: 6px !important; }
+    div[data-testid="stSlider"] div[role="slider"] { background-color: transparent !important; box-shadow: none !important; border: none !important; height: 24px; width: 24px; }
     div[data-testid="stSlider"] div[role="slider"]::after {
-        content: "★";             /* 별 모양 */
-        font-size: 32px;          /* 별 크기 */
-        color: #D4AC0D !important; /* 별 색상 (머스터드) */
-        position: absolute;
-        top: -18px;               
-        left: -5px;               
-        text-shadow: 0px 1px 2px rgba(0,0,0,0.2);
+        content: "★"; font-size: 32px; color: #D4AC0D !important; position: absolute; top: -18px; left: -5px; text-shadow: 0px 1px 2px rgba(0,0,0,0.2);
     }
-    
-    /* 5. 숫자 값 색상도 튀지 않게 변경 */
-    div[data-testid="stSlider"] div[data-testid="stMarkdownContainer"] p {
-        color: #557C64 !important; /* 글자색은 테마색 유지 */
-    }
-    /* ================================================================= */
+    div[data-testid="stSlider"] div[data-testid="stMarkdownContainer"] p { color: #557C64 !important; }
 
     /* 라디오 버튼 스타일 */
     div[data-testid="stRadio"] { background-color: transparent; }
-    
-    div[data-testid="stRadio"] > div[role="radiogroup"] {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        gap: 10px;
-    }
+    div[data-testid="stRadio"] > div[role="radiogroup"] { display: flex; justify-content: space-between; width: 100%; gap: 10px; }
     div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-        flex-grow: 1;
-        background-color: #FFFFFF;
-        border: 1px solid #E0E5E2;
-        border-radius: 8px;
-        padding: 12px;
-        justify-content: center;
+        flex-grow: 1; background-color: #FFFFFF; border: 1px solid #E0E5E2; border-radius: 8px; padding: 12px; justify-content: center;
     }
-    div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
-        border-color: #557C64;
-        background-color: #F7F9F8;
-    }
+    div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover { border-color: #557C64; background-color: #F7F9F8; }
     
-    /* 안내 박스 */
-    .guide-box {
-        background-color: #F7F9F8; 
-        padding: 20px; 
-        border-radius: 12px;
-        border: 1px solid #E0E5E2; 
-        margin-bottom: 25px; 
-        font-size: 14px; color: #444; line-height: 1.6;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-    }
+    .guide-box { background-color: #F7F9F8; padding: 20px; border-radius: 12px; border: 1px solid #E0E5E2; margin-bottom: 25px; font-size: 14px; color: #444; line-height: 1.6; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
     .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px; color: #557C64;}
-    
-    /* 경고 문구 */
     .warning-text { color: #8D6E63; font-size: 14px; margin-top: 5px; font-weight: 500; }
-    
-    /* 글자 수 박스 */
-    .count-box {
-        background-color: #E3EBE6; color: #2F4F3A; padding: 12px; border-radius: 8px;
-        font-weight: bold; font-size: 14px; margin-bottom: 10px; text-align: right; border: 1px solid #C4D7CD; 
-    }
-    
-    /* 분석 박스 */
-    .analysis-box {
-        background-color: #FCFDFD; border-left: 4px solid #557C64; padding: 15px;
-        border-radius: 5px; margin-bottom: 20px; font-size: 14px; color: #333;
-    }
-    
-    /* 푸터 스타일 */
-    .footer {
-        margin-top: 50px; text-align: center; font-size: 14px; color: #888; border-top: 1px solid #eee; padding-top: 20px;
-    }
-    
-    /* 카드 제목 스타일 */
-    .card-title {
-        font-size: 15px; font-weight: 700; color: #557C64; margin-bottom: 10px;
-    }
+    .count-box { background-color: #E3EBE6; color: #2F4F3A; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-bottom: 10px; text-align: right; border: 1px solid #C4D7CD; }
+    .analysis-box { background-color: #FCFDFD; border-left: 4px solid #557C64; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-size: 14px; color: #333; }
+    .footer { margin-top: 50px; text-align: center; font-size: 14px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
+    .card-title { font-size: 15px; font-weight: 700; color: #557C64; margin-bottom: 10px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -186,10 +88,10 @@ student_input = st.text_area(
 if student_input and len(student_input) < 30:
     st.markdown("<p class='warning-text'>⚠️ 내용이 조금 짧습니다. 3가지 에피소드가 들어갔나요?</p>", unsafe_allow_html=True)
 
-# --- 6. 3단계 작성 옵션 (카드형 UI) ---
+# --- 6. 3단계 작성 옵션 ---
 st.markdown("### 2. 작성 옵션 설정")
 
-# [카드 1] 작성 모드 선택
+# [카드 1] 모드 선택
 with st.container(border=True):
     st.markdown('<p class="card-title">① 작성 모드 선택</p>', unsafe_allow_html=True)
     mode = st.radio(
@@ -200,7 +102,7 @@ with st.container(border=True):
         label_visibility="collapsed"
     )
 
-# [카드 2] 희망 분량 설정
+# [카드 2] 희망 분량
 with st.container(border=True):
     st.markdown('<p class="card-title">② 희망 분량 (공백 포함)</p>', unsafe_allow_html=True)
     target_length = st.slider(
@@ -209,7 +111,7 @@ with st.container(border=True):
         label_visibility="collapsed"
     )
 
-# [카드 3] 핵심 키워드 선택
+# [카드 3] 키워드 선택
 with st.container(border=True):
     st.markdown('<p class="card-title">③ 강조할 핵심 키워드 (다중 선택)</p>', unsafe_allow_html=True)
     filter_options = [
@@ -222,16 +124,14 @@ with st.container(border=True):
     except:
         selected_tags = st.multiselect("키워드 선택", filter_options, label_visibility="collapsed")
 
-# [NEW] 모델 선택 (고급 설정) - 접었다 폈다 할 수 있게 Expander 사용
+# [고급 설정] 모델 선택 (기본값을 pro로 변경하여 오류 방지)
 st.markdown("")
 with st.expander("⚙️ AI 모델 직접 선택하기 (고급 설정)"):
     manual_model = st.selectbox(
-        "사용할 모델을 선택하세요 (보통 '자동'을 추천합니다)",
-        ["🤖 자동 (Auto - 추천)", "gemini-1.5-flash (빠름/무료)", "gemini-1.5-pro (고성능)", "gemini-pro (구버전)"],
-        index=0,
-        help="Google API 키 권한에 따라 사용 불가능한 모델이 있을 수 있습니다."
+        "사용할 모델을 선택하세요 (오류 시 구버전을 선택하세요)",
+        ["🤖 자동 (Auto)", "gemini-1.5-flash (빠름/무료)", "gemini-pro (구버전-안정적)"],
+        index=0
     )
-
 
 # --- 7. 실행 및 결과 영역 ---
 st.markdown("")
@@ -245,31 +145,31 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
             try:
                 genai.configure(api_key=api_key)
 
-                # --- [수정됨] 모델 선택 로직 (수동 vs 자동) ---
-                target_model = "gemini-1.5-flash" # 기본값
+                # --- 모델 선택 로직 (안정성 강화) ---
+                target_model = "gemini-pro" # 최후의 수단 (구버전)
                 
-                # 1. 사용자가 특정 모델을 찍었을 때
-                if "gemini" in manual_model:
-                    target_model = manual_model.split()[0] # "gemini-1.5-flash (빠름)" -> "gemini-1.5-flash" 추출
+                # 사용자가 수동 선택한 경우
+                if "flash" in manual_model:
+                    target_model = "gemini-1.5-flash"
+                elif "pro" in manual_model and "1.5" not in manual_model:
+                    target_model = "gemini-pro"
                 
-                # 2. '자동(Auto)'을 선택했을 때 (기존 로직 수행)
-                else:
+                # '자동' 선택 시
+                elif "자동" in manual_model:
                     try:
                         models = genai.list_models()
                         available_names = [m.name for m in models if 'generateContent' in m.supported_generation_methods]
-                        # 우선순위: 1.5-pro -> 1.5-flash
+                        # 1.5 Flash 시도 -> 실패하면 Pro로
                         for name in available_names:
-                            if 'gemini-1.5-pro' in name:
+                            if 'gemini-1.5-flash' in name:
                                 target_model = name
                                 break
-                            elif 'gemini-1.5-flash' in name:
+                            elif 'gemini-pro' in name:
                                 target_model = name
                     except:
-                        pass # API 호출 실패 시 기본값(flash) 사용
+                        pass # API 조회 실패 시 기본값(gemini-pro) 사용
 
-                # --- 이후 로직은 동일 ---
-                
-                # 모드별 설정
+                # 모드별 프롬프트 설정
                 if "엄격하게" in mode:
                     temp = 0.2
                     prompt_instruction = """
@@ -343,12 +243,12 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # 사용된 모델 이름 표시
                 st.caption(f"※ {mode.split()[1]} 모드 동작 중 ({target_model})")
                 st.text_area("결과 (복사해서 나이스에 붙여넣으세요)", value=final_text, height=350)
 
             except Exception as e:
                 st.error(f"오류가 발생했습니다: {e}")
+                st.info("💡 팁: GitHub의 requirements.txt 파일에 'google-generativeai>=0.8.3'을 적고 [Reboot] 하면 최신 모델을 쓸 수 있습니다.")
 
 # --- 8. 푸터 ---
 st.markdown("""
@@ -357,9 +257,4 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
-
-
-
-
-
 
