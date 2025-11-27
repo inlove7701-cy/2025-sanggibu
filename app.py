@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 
 # 1. 페이지 설정
-st.set_page_config(page_title="2025 생기부 메이트", layout="centered")
+st.set_page_config(page_title="2025 1학년부 행발 메이트", layout="centered")
 st.title("🤖 2025 생기부 메이트")
 st.markdown("<p style='color:#888;'>Gift for 2025 1st Grade Teachers</p>", unsafe_allow_html=True)
 st.divider()
@@ -64,4 +64,5 @@ if prompt := st.chat_input("예: 수학 질문이 많고, 체육대회 때 응�
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
 
             except Exception as e:
+
                 st.error(f"오류 발생: {e}")
