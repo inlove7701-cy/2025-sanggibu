@@ -107,7 +107,7 @@ with st.container(border=True):
     st.markdown('<p class="card-title">② 희망 분량 (공백 포함)</p>', unsafe_allow_html=True)
     target_length = st.slider(
         "글자 수",
-        min_value=100, max_value=900, value=500, step=10,
+        min_value=100, max_value=1000, value=500, step=10,
         label_visibility="collapsed"
     )
 
@@ -124,12 +124,12 @@ with st.container(border=True):
     except:
         selected_tags = st.multiselect("키워드 선택", filter_options, label_visibility="collapsed")
 
-# [고급 설정] 모델 선택 (기본값을 pro로 변경하여 오류 방지)
+# [고급 설정] 모델 선택
 st.markdown("")
 with st.expander("⚙️ AI 모델 직접 선택하기 (고급 설정)"):
     manual_model = st.selectbox(
-        "사용할 모델을 선택하세요 (오류 시 구버전을 선택하세요)",
-        ["🤖 자동 (Auto)", "gemini-1.5-flash (빠름/무료)", "gemini-pro (구버전-안정적)"],
+        "사용할 모델을 선택하세요",
+        ["🤖 자동 (Auto)", "⚡ gemini-1.5-flash", "🐢 gemini-pro (구버전)"],
         index=0
     )
 
@@ -146,17 +146,16 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
         max_len = int(target_length * 1.1)
         
         with st.spinner(f'AI가 {min_len}~{max_len}자 분량으로 작성 중입니다...'):
-            # try-except 블록 들여쓰기 교정 완료
             try:
                 genai.configure(api_key=api_key)
 
-                # --- 모델 선택 로직 (심플하게 변경) ---
-                if "pro" in manual_model:
-                    target_model = "gemini-1.5-pro"
-                else:
-                    target_model = "gemini-1.5-flash" # 기본값
-
-                # 모드별 설정
+                # --- 1. 모델 결정 ---
+                target_model = "gemini-1.5-flash" # 기본값
+                
+                if "pro" in manual_model and "1.5" not in manual_model: target_model = "gemini-pro"
+                elif "1.5-flash" in manual_model: target_model = "gemini-1.5-flash"
+                
+                # --- 2. 프롬프트 & 설정 준비 ---
                 if "엄격하게" in mode:
                     temp = 0.2
                     prompt_instruction = f"""
@@ -175,9 +174,7 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                     """
 
                 generation_config = genai.types.GenerationConfig(temperature=temp)
-                model = genai.GenerativeModel(target_model, generation_config=generation_config)
-
-                # 키워드 처리
+                
                 if not selected_tags:
                     tags_str = "별도 지정 없음. [인성/소통] -> [학업/태도] -> [진로/관심] -> [발전가능성] 순서로 작성."
                 else:
@@ -202,7 +199,23 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                 {prompt_instruction}
                 """
 
-                response = model.generate_content(system_prompt)
+                # --- 3. [비상 대처 로직] 실행 ---
+                try:
+                    # 1순위: 최신 모델(Flash) 시도
+                    model = genai.GenerativeModel(target_model, generation_config=generation_config)
+                    response = model.generate_content(system_prompt)
+                
+                except Exception as e_inner:
+                    # 실패 시(404 등): 구버전(Pro)으로 자동 전환 시도
+                    if "404" in str(e_inner):
+                        st.toast("⚠️ 최신 모델을 찾을 수 없어 '구버전(gemini-pro)'으로 자동 전환합니다.", icon="🔄")
+                        target_model = "gemini-pro"
+                        model = genai.GenerativeModel("gemini-pro", generation_config=generation_config)
+                        response = model.generate_content(system_prompt)
+                    else:
+                        raise e_inner # 404가 아니면 진짜 에러이므로 던짐
+
+                # --- 4. 결과 출력 ---
                 full_text = response.text
                 
                 if "---SPLIT---" in full_text:
@@ -216,7 +229,6 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                 char_count = len(final_text)
                 char_count_no_space = len(final_text.replace(" ", "").replace("\n", ""))
                 
-                # 바이트 계산
                 byte_count = 0
                 for char in final_text:
                     if ord(char) > 127: byte_count += 3
@@ -237,15 +249,15 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                 </div>
                 """, unsafe_allow_html=True)
                 
-                st.caption(f"※ {mode.split()[1]} 모드 동작 중 ({target_model})")
+                st.caption(f"※ {mode.split()[1]} 모드 | 사용 모델: {target_model}")
                 st.text_area("결과 (복사해서 나이스에 붙여넣으세요)", value=final_text, height=350)
 
             except Exception as e:
                 if "429" in str(e):
                     st.error("🚨 오늘 사용 가능한 무료 AI 횟수를 모두 쓰셨습니다! (하루 사용량 초과)")
-                    st.info("💡 팁: 내일 다시 시도하시거나, 다른 구글 계정으로 키를 발급받으세요.")
                 else:
                     st.error(f"오류가 발생했습니다: {e}")
+                    st.info("💡 해결법: GitHub의 requirements.txt 파일에 'google-generativeai>=0.8.3'을 적고 [Reboot] 해주세요.")
 
 # --- 8. 푸터 ---
 st.markdown("""
@@ -254,6 +266,7 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
