@@ -240,16 +240,12 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                 
                 st.caption(f"※ {mode.split()[1]} 모드 동작 중 ({target_model})")
                 st.text_area("결과 (복사해서 나이스에 붙여넣으세요)", value=final_text, height=350)
-
 except Exception as e:
-    # 429 에러(사용량 초과)가 났을 때 친절하게 안내
-    if "429" in str(e):
-        st.error("🚨 오늘 사용 가능한 무료 AI 횟수를 모두 쓰셨습니다! (하루 50회~1500회)")
-        st.info("💡 팁: 내일 다시 시도하시거나, 다른 구글 계정으로 키를 발급받으세요.")
-    else:
-        st.error(f"오류가 발생했습니다: {e}")
-                st.info("💡 팁: GitHub의 requirements.txt 파일에 'google-generativeai>=0.8.3'을 적고 [Reboot] 하면 최신 모델을 쓸 수 있습니다.")
-
+                if "429" in str(e):
+                    st.error("🚨 오늘 사용 가능한 무료 AI 횟수를 모두 쓰셨습니다! (하루 사용량 초과)")
+                    st.info("💡 팁: 내일 다시 시도하시거나, 다른 구글 계정으로 키를 발급받으세요.")
+                else:
+                    st.error(f"오류가 발생했습니다: {e}")
 # --- 8. 푸터 ---
 st.markdown("""
 <div class="footer">
@@ -257,6 +253,7 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
