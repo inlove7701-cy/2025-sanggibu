@@ -1,6 +1,5 @@
 import streamlit as st
 import google.generativeai as genai
-import importlib.metadata # 버전 확인용
 
 # --- 1. 페이지 설정 ---
 st.set_page_config(
@@ -24,6 +23,7 @@ st.markdown("""
     }
     .stButton button:hover { background-color: #3E5F4A !important; transform: scale(1.01); }
     
+    /* 슬라이더 스타일 */
     div[data-testid="stSlider"] div[data-baseweb="slider"] > div { background-color: #E0E0E0 !important; border-radius: 10px; height: 6px !important; }
     div[data-testid="stSlider"] div[data-baseweb="slider"] > div > div { background-color: #D4AC0D !important; height: 6px !important; }
     div[data-testid="stSlider"] div[role="slider"] { background-color: transparent !important; box-shadow: none !important; border: none !important; height: 24px; width: 24px; }
@@ -32,6 +32,7 @@ st.markdown("""
     }
     div[data-testid="stSlider"] div[data-testid="stMarkdownContainer"] p { color: #557C64 !important; }
 
+    /* 라디오 버튼 스타일 */
     div[data-testid="stRadio"] { background-color: transparent; }
     div[data-testid="stRadio"] > div[role="radiogroup"] { display: flex; justify-content: space-between; width: 100%; gap: 10px; }
     div[data-testid="stRadio"] > div[role="radiogroup"] > label {
@@ -41,6 +42,7 @@ st.markdown("""
     
     .guide-box { background-color: #F7F9F8; padding: 20px; border-radius: 12px; border: 1px solid #E0E5E2; margin-bottom: 25px; font-size: 14px; color: #444; line-height: 1.6; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
     .guide-title { font-weight: bold; margin-bottom: 8px; display: block; font-size: 15px; color: #557C64;}
+    .warning-text { color: #8D6E63; font-size: 14px; margin-top: 5px; font-weight: 500; }
     .count-box { background-color: #E3EBE6; color: #2F4F3A; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-bottom: 10px; text-align: right; border: 1px solid #C4D7CD; }
     .analysis-box { background-color: #FCFDFD; border-left: 4px solid #557C64; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-size: 14px; color: #333; }
     .footer { margin-top: 50px; text-align: center; font-size: 14px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
@@ -54,22 +56,10 @@ try:
 except FileNotFoundError:
     api_key = None
 
-# --- [디버깅용] 버전 확인 ---
-try:
-    lib_version = importlib.metadata.version("google-generativeai")
-except:
-    lib_version = "알 수 없음"
-
 # --- 4. 헤더 영역 ---
 st.title("📝 2025 1학년부 행발 메이트")
 st.markdown("<p class='subtitle'>Gift for 2025 1st Grade Teachers</p>", unsafe_allow_html=True)
 st.divider()
-
-# 사이드바에 버전 정보 표시 (문제 해결용)
-with st.sidebar:
-    st.caption(f"🔧 System Info: google-generativeai v{lib_version}")
-    if lib_version < "0.8.3":
-        st.error("⚠️ 라이브러리 버전이 낮습니다! requirements.txt를 업데이트하고 Reboot 하세요.")
 
 if not api_key:
     with st.expander("🔐 관리자 설정 (API Key 입력)"):
@@ -95,34 +85,51 @@ student_input = st.text_area(
     label_visibility="collapsed"
 )
 
+if student_input and len(student_input) < 30:
+    st.markdown("<p class='warning-text'>⚠️ 내용이 조금 짧습니다. 3가지 에피소드가 들어갔나요?</p>", unsafe_allow_html=True)
+
 # --- 6. 3단계 작성 옵션 ---
 st.markdown("### 2. 작성 옵션 설정")
 
+# [카드 1] 모드 선택
 with st.container(border=True):
     st.markdown('<p class="card-title">① 작성 모드 선택</p>', unsafe_allow_html=True)
     mode = st.radio(
-        "모드", ["✨ 풍성하게 (내용 보강)", "🛡️ 엄격하게 (팩트 중심)"],
-        horizontal=True, label_visibility="collapsed"
+        "모드",
+        ["✨ 풍성하게 (내용 보강)", "🛡️ 엄격하게 (팩트 중심)"],
+        captions=["살을 붙여 자연스럽게 만듭니다.", "입력된 사실 외에는 절대 짓지 않습니다."],
+        horizontal=True, 
+        label_visibility="collapsed"
     )
 
+# [카드 2] 희망 분량
 with st.container(border=True):
     st.markdown('<p class="card-title">② 희망 분량 (공백 포함)</p>', unsafe_allow_html=True)
-    target_length = st.slider("글자 수", 300, 1000, 500, 50, label_visibility="collapsed")
+    target_length = st.slider(
+        "글자 수",
+        min_value=100, max_value=600, value=500, step=10,
+        label_visibility="collapsed"
+    )
 
+# [카드 3] 키워드 선택
 with st.container(border=True):
     st.markdown('<p class="card-title">③ 강조할 핵심 키워드 (다중 선택)</p>', unsafe_allow_html=True)
-    filter_options = ["👑 AI 자동 판단", "📘 학업 역량", "🤝 공동체 역량", "🚀 진로 역량", "🌱 발전 가능성", "🎨 창의적 문제해결력", "😊 인성/나눔/배려", "⏰ 성실성/규칙준수"]
+    filter_options = [
+        "👑 AI 자동 판단", "📘 학업 역량", "🤝 공동체 역량", 
+        "🚀 진로 역량", "🌱 발전 가능성", "🎨 창의적 문제해결력", 
+        "😊 인성/나눔/배려", "⏰ 성실성/규칙준수"
+    ]
     try:
         selected_tags = st.pills("키워드 버튼", options=filter_options, selection_mode="multi", label_visibility="collapsed")
     except:
         selected_tags = st.multiselect("키워드 선택", filter_options, label_visibility="collapsed")
 
-# [고급 설정] 모델 선택 (간소화됨)
+# [고급 설정] 모델 선택 (기본값을 pro로 변경하여 오류 방지)
 st.markdown("")
 with st.expander("⚙️ AI 모델 직접 선택하기 (고급 설정)"):
     manual_model = st.selectbox(
-        "사용할 모델을 선택하세요",
-        ["⚡ gemini-1.5-flash (기본값)", "🤖 gemini-1.5-pro (고성능)"],
+        "사용할 모델을 선택하세요 (오류 시 구버전을 선택하세요)",
+        ["🤖 자동 (Auto)", "gemini-1.5-flash (빠름/무료)", "gemini-pro (구버전-안정적)"],
         index=0
     )
 
@@ -134,64 +141,86 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
     elif not student_input:
         st.warning("⚠️ 학생 관찰 내용을 입력해주세요!")
     else:
-        # 분량 계산
-        min_len = int(target_length * 0.9)
-        max_len = int(target_length * 1.1)
-        
-        with st.spinner(f'AI가 {min_len}~{max_len}자 분량으로 작성 중입니다...'):
+        with st.spinner(f'AI가 {mode.split()[1]} 모드로 분석 중입니다...'):
             try:
                 genai.configure(api_key=api_key)
 
-                # --- [수정] 구버전 fallback 제거, 신버전 강제 ---
-                if "pro" in manual_model:
-                    target_model = "gemini-1.5-pro"
-                else:
-                    target_model = "gemini-1.5-flash" # 무조건 1.5 flash 사용
+                # --- 모델 선택 로직 (안정성 강화) ---
+                target_model = "gemini-pro" # 최후의 수단 (구버전)
+                
+                # 사용자가 수동 선택한 경우
+                if "flash" in manual_model:
+                    target_model = "gemini-1.5-flash"
+                elif "pro" in manual_model and "1.5" not in manual_model:
+                    target_model = "gemini-pro"
+                
+                # '자동' 선택 시
+                elif "자동" in manual_model:
+                    try:
+                        models = genai.list_models()
+                        available_names = [m.name for m in models if 'generateContent' in m.supported_generation_methods]
+                        # 1.5 Flash 시도 -> 실패하면 Pro로
+                        for name in available_names:
+                            if 'gemini-1.5-flash' in name:
+                                target_model = name
+                                break
+                            elif 'gemini-pro' in name:
+                                target_model = name
+                    except:
+                        pass # API 조회 실패 시 기본값(gemini-pro) 사용
 
-                # 모드별 설정
+                # 모드별 프롬프트 설정
                 if "엄격하게" in mode:
                     temp = 0.2
-                    prompt_instruction = f"""
-                    # ★★★ 엄격 작성 원칙 ★★★
-                    1. **분량 준수**: 공백 포함 **{min_len}자 이상 {max_len}자 이하**로 작성.
-                    2. **내용 부족 시**: 없는 사실 지어내지 말고, 교사의 교육적 평가로 보완.
-                    3. **절대 날조 금지**: 입력 안 된 에피소드 금지.
+                    prompt_instruction = """
+                    # ★★★ 엄격 작성 원칙 (Strict Mode) ★★★
+                    1. **절대 날조 금지 (Zero Hallucination)**: 사용자가 입력한 내용에 없는 구체적 에피소드를 절대 창작하지 마십시오.
+                    2. **담백한 서술**: 입력 정보가 부족하면 억지로 늘리지 말고, 일반적인 태도나 성향 위주로 건조하게 서술하십시오.
+                    3. 입력된 사실(Fact)에 기반한 교사의 평가 위주로 작성하십시오.
                     """
                 else:
                     temp = 0.75
-                    prompt_instruction = f"""
-                    # ★★★ 풍성 작성 원칙 ★★★
-                    1. **분량 준수**: 공백 포함 **{min_len}자 이상 {max_len}자 이하**로 작성.
-                    2. **내용 보강**: 문맥에 맞는 수식어와 의미 부여로 풍성하게.
-                    3. 문장을 매끄럽게 연결.
+                    prompt_instruction = """
+                    # ★★★ 풍성 작성 원칙 (Rich Mode) ★★★
+                    1. **내용 보강 (Elaboration)**: 입력된 내용이 다소 짧더라도, 문맥에 맞는 적절한 수식어와 교육적 표현을 사용하여 풍성하게 작성하십시오.
+                    2. **자연스러운 연결**: 문장과 문장 사이를 매끄럽게 연결하여 유려한 글이 되도록 하십시오.
+                    3. 학생의 잠재력과 성장 가능성을 긍정적인 어조로 구체화하여 서술하십시오.
                     """
 
                 generation_config = genai.types.GenerationConfig(temperature=temp)
                 model = genai.GenerativeModel(target_model, generation_config=generation_config)
-
-                # 키워드 처리
+# ====================================================
+                # [수정된 부분] 키워드 선택 여부에 따른 분기 처리
+                # ====================================================
                 if not selected_tags:
-                    tags_str = "별도 지정 없음. [인성/소통] -> [학업/태도] -> [진로/관심] -> [발전가능성] 순서 준수."
+                    # 선택된 키워드가 없을 때: 정석 순서 강제
+                    tags_str = "별도의 키워드 지정 없음. 따라서 반드시 [인성/소통] -> [학업/태도] -> [진로/관심] -> [발전가능성] 순서로 내용을 전개할 것."
                 else:
-                    tags_str = f"핵심 키워드: {', '.join(selected_tags)}"
+                    # 키워드가 있을 때: 해당 키워드 중심
+                    tags_str = f"다음 핵심 키워드를 중심으로 서술: {', '.join(selected_tags)}"
 
                 system_prompt = f"""
-                당신은 입학사정관 관점의 고등학교 교사입니다.
+                당신은 입학사정관 관점을 가진 고등학교 교사입니다.
                 입력 정보: {student_input}
                 작성 지침: [{tags_str}]
                 
-                다음 두 파트로 나누어 출력 (구분선: "---SPLIT---")
+                다음 두 가지 파트로 나누어 출력하세요. 구분선: "---SPLIT---"
 
                 [Part 1] 영역별 분석 (개조식)
-                - [인성 / 학업 / 진로 / 공동체] 요약
+                - [인성 / 학업 / 진로 / 공동체] 분류하여 요약
                 
                 ---SPLIT---
 
                 [Part 2] 행동특성 및 종합의견 (서술형 종합본)
                 - 문체: ~함, ~임
                 - 구조: 사례 -> 행동 -> 성장/평가
+                - 목표 분량: 공백 포함 약 {target_length}자 (오차범위 ±10%)
                 
                 {prompt_instruction}
+
+                # ★★★ 구조 및 순서 (Structure & Order) ★★★
+                1. **기본 순서 준수**: 특별히 강조할 키워드가 지정되지 않았다면, 글의 흐름을 **[인성/사회성] → [학업역량] → [진로적성] → [발전가능성]** 순서로 배치하십시오.
+                2. **유기적 연결**: 각 영역을 딱딱하게 끊지 말고, "또한", "이러한 태도는 ~으로 이어져" 등의 접속어를 활용해 하나의 글처럼 자연스럽게 연결하십시오.
                 """
 
                 response = model.generate_content(system_prompt)
@@ -202,16 +231,11 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                     analysis_text = parts[0].strip()
                     final_text = parts[1].strip()
                 else:
-                    analysis_text = "영역별 분석 생성 실패"
+                    analysis_text = "영역별 분석을 생성하지 못했습니다."
                     final_text = full_text
 
                 char_count = len(final_text)
                 char_count_no_space = len(final_text.replace(" ", "").replace("\n", ""))
-                
-                byte_count = 0
-                for char in final_text:
-                    if ord(char) > 127: byte_count += 3
-                    else: byte_count += 1
                 
                 st.success("작성 완료!")
                 
@@ -223,34 +247,23 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
 
                 st.markdown(f"""
                 <div class="count-box">
-                    목표: {target_length}자 내외 | <b>실제: {char_count}자</b> (공백제외 {char_count_no_space}자)<br>
-                    💾 <b>예상 바이트: {byte_count} Bytes</b> (NEIS 기준)
+                    📊 목표: {target_length}자 | 실제: {char_count}자 (공백제외 {char_count_no_space}자)
                 </div>
                 """, unsafe_allow_html=True)
                 
-                st.caption(f"※ {mode.split()[1]} 모드 | 사용 모델: {target_model}")
+                st.caption(f"※ {mode.split()[1]} 모드 동작 중 ({target_model})")
                 st.text_area("결과 (복사해서 나이스에 붙여넣으세요)", value=final_text, height=350)
 
             except Exception as e:
-                # 429: 사용량 초과 / 404: 모델 없음 (라이브러리 버전 문제)
-                if "429" in str(e):
-                    st.error("🚨 오늘 사용 가능한 무료 AI 횟수를 모두 쓰셨습니다!")
-                elif "404" in str(e):
-                    st.error("🚨 서버의 라이브러리 버전이 낮아서 '1.5-flash' 모델을 못 찾고 있습니다.")
-                    st.warning("👉 GitHub에서 'requirements.txt' 파일을 열고 내용을 확인해주세요.")
-                    st.code("streamlit\ngoogle-generativeai>=0.8.3")
-                    st.info("수정 후 [Reboot App]을 하시면 해결됩니다.")
-                else:
-                    st.error(f"오류가 발생했습니다: {e}")
+                st.error(f"오류가 발생했습니다: {e}")
+                st.info("💡 팁: GitHub의 requirements.txt 파일에 'google-generativeai>=0.8.3'을 적고 [Reboot] 하면 최신 모델을 쓸 수 있습니다.")
 
 # --- 8. 푸터 ---
 st.markdown("""
 <div class="footer">
-    © 2025 <b>[선생님 이름]</b>. All rights reserved.<br>
-    문의: <a href="mailto:teacher@school.kr" style="color: #888; text-decoration: none;">teacher@school.kr</a>
+    © 2025 <b>Chaeyon with AI</b>. All rights reserved.<br>
+    문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
-
-
 
 
