@@ -143,31 +143,11 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
     else:
         with st.spinner(f'AI가 {mode.split()[1]} 모드로 분석 중입니다...'):
             try:
-                genai.configure(api_key=api_key)
-
-                # --- 모델 선택 로직 (안정성 강화) ---
-                target_model = "gemini-pro" # 최후의 수단 (구버전)
-                
-                # 사용자가 수동 선택한 경우
-                if "flash" in manual_model:
-                    target_model = "gemini-1.5-flash"
-                elif "pro" in manual_model and "1.5" not in manual_model:
-                    target_model = "gemini-pro"
-                
-                # '자동' 선택 시
-                elif "자동" in manual_model:
-                    try:
-                        models = genai.list_models()
-                        available_names = [m.name for m in models if 'generateContent' in m.supported_generation_methods]
-                        # 1.5 Flash 시도 -> 실패하면 Pro로
-                        for name in available_names:
-                            if 'gemini-1.5-flash' in name:
-                                target_model = name
-                                break
-                            elif 'gemini-pro' in name:
-                                target_model = name
-                    except:
-                        pass # API 조회 실패 시 기본값(gemini-pro) 사용
+# --- 모델 선택 로직 (Flash 우선) ---
+                if "pro" in manual_model:
+                    target_model = "gemini-1.5-pro"
+                else:
+                    target_model = "gemini-1.5-flash" # 기본값 (무료 사용량 1500회/일)
 
                 # 모드별 프롬프트 설정
                 if "엄격하게" in mode:
@@ -254,8 +234,13 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
                 st.caption(f"※ {mode.split()[1]} 모드 동작 중 ({target_model})")
                 st.text_area("결과 (복사해서 나이스에 붙여넣으세요)", value=final_text, height=350)
 
-            except Exception as e:
-                st.error(f"오류가 발생했습니다: {e}")
+except Exception as e:
+    # 429 에러(사용량 초과)가 났을 때 친절하게 안내
+    if "429" in str(e):
+        st.error("🚨 오늘 사용 가능한 무료 AI 횟수를 모두 쓰셨습니다! (하루 50회~1500회)")
+        st.info("💡 팁: 내일 다시 시도하시거나, 다른 구글 계정으로 키를 발급받으세요.")
+    else:
+        st.error(f"오류가 발생했습니다: {e}")
                 st.info("💡 팁: GitHub의 requirements.txt 파일에 'google-generativeai>=0.8.3'을 적고 [Reboot] 하면 최신 모델을 쓸 수 있습니다.")
 
 # --- 8. 푸터 ---
@@ -265,6 +250,7 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
