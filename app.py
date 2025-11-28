@@ -124,12 +124,12 @@ with st.container(border=True):
     except:
         selected_tags = st.multiselect("키워드 선택", filter_options, label_visibility="collapsed")
 
-# [고급 설정] 모델 선택 (기본값을 pro로 변경하여 오류 방지)
+# [고급 설정] 모델 선택
 st.markdown("")
 with st.expander("⚙️ AI 모델 직접 선택하기 (고급 설정)"):
     manual_model = st.selectbox(
-        "사용할 모델을 선택하세요 (오류 시 구버전을 선택하세요)",
-        ["🤖 자동 (Auto)", "gemini-1.5-flash (빠름/무료)", "gemini-pro (구버전-안정적)"],
+        "사용할 모델을 선택하세요",
+        ["⚡ gemini-1.5-flash (추천: 빠르고 넉넉함)", "🤖 gemini-1.5-pro (고성능: 하루 50회 제한)"],
         index=0
     )
 
@@ -141,13 +141,20 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
     elif not student_input:
         st.warning("⚠️ 학생 관찰 내용을 입력해주세요!")
     else:
-        with st.spinner(f'AI가 {mode.split()[1]} 모드로 분석 중입니다...'):
+        # 분량 계산
+        min_len = int(target_length * 0.9)
+        max_len = int(target_length * 1.1)
+        
+        with st.spinner(f'AI가 {min_len}~{max_len}자 분량으로 작성 중입니다...'):
+            # try-except 블록 들여쓰기 교정 완료
             try:
-# --- 모델 선택 로직 (Flash 우선) ---
+                genai.configure(api_key=api_key)
+
+                # --- 모델 선택 로직 (심플하게 변경) ---
                 if "pro" in manual_model:
                     target_model = "gemini-1.5-pro"
                 else:
-                    target_model = "gemini-1.5-flash" # 기본값 (무료 사용량 1500회/일)
+                    target_model = "gemini-1.5-flash" # 기본값
 
                 # 모드별 프롬프트 설정
                 if "엄격하게" in mode:
@@ -250,6 +257,7 @@ st.markdown("""
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
