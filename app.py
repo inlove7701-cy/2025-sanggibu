@@ -261,10 +261,11 @@ if st.button("✨ 생기부 문구 생성하기", use_container_width=True):
 # --- 8. 푸터 ---
 st.markdown("""
 <div class="footer">
-    © 2025 <b>Chaeyon with AI</b>. All rights reserved.<br>
+    © 2025 <b>Chaeyun with AI</b>. All rights reserved.<br>
     문의: <a href="inlove11@naver.com" style="color: #888; text-decoration: none;">inlove11@naver.com</a>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
